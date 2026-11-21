@@ -953,7 +953,9 @@ impl<'a> Rewriter<'a> {
         let found = if name.contains('.') {
             match self.scope.qual_words.get(name) {
                 Some(g) => Found::One(g.clone()),
-                None => Found::Missing,
+                // A qualified name that is not public must not fall through unchanged: it
+                // could spell the global name of a private word (`util.secret`).
+                None => return Err(format!("unknown word `{}`", name)),
             }
         } else {
             self.scope.words.lookup(name)
