@@ -1,0 +1,10 @@
+# The entry module of the package.
+module main
+
+use shapes (Shape, Circle, Square, area)
+use mathx
+
+main :: -- ! IO
+main = 5 Circle area show print
+       4 Square area show print
+       3 mathx.cube show print

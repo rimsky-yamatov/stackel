@@ -1,0 +1,12 @@
+# A module of the package: `use shapes` finds it in src/shapes.stk.
+module shapes
+
+use mathx (square)
+
+pub type Shape = Circle Int | Square Int
+
+# The area of a circle, with pi taken as 3.
+pub area :: Shape -- Int
+pub area = match
+  | Circle square 3 mul
+  | Square square

@@ -1,0 +1,9 @@
+# A package with a dependency.
+#   cargo run -- run examples/pkg-demo
+[package]
+name = "pkg-demo"
+version = "0.1.0"
+
+[deps]
+# `allow = []` limits the dependency to pure words: it may not perform any effect.
+mathx = { path = "deps/mathx", allow = [] }

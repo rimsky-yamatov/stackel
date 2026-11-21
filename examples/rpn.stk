@@ -1,0 +1,60 @@
+# An RPN calculator, written in Stackel.
+#   echo "3 4 add 2 mul" | cargo run -- run examples/rpn.stk      # prints 14
+#   cargo run -- test examples/rpn.stk
+use std.list (List, Nil, Cons)
+use std.text (split, to_int)
+use std.option (Option, None, Some)
+use std.result (Result, Ok, Err, try, unwrap_or, is_err)
+
+# `st f binary` replaces the two numbers on top of the stack `st` by `f` applied to them.
+# (The head of the list is the top of the stack.)
+binary :: (List Int) [Int Int -- Int] -- (List Int) ! Fail
+binary = let st f in st match
+  | Nil "stack underflow" fail
+  | Cons let b rest in rest match
+      | Nil "stack underflow" fail
+      | Cons let a rest2 in a b f apply rest2 Cons
+
+# `st word step` is the stack after `word`: a number is pushed, `add` `sub` `mul` combine
+# two numbers, and blanks are ignored.
+step :: (List Int) String -- (List Int) ! Fail
+step = let st w in w length 0 eq
+  | then st
+  | else w to_int match
+      | Some let n in n st Cons
+      | None w "add" eq
+          | then st [ add ] binary
+          | else w "sub" eq
+              | then st [ sub ] binary
+              | else w "mul" eq
+                  | then st [ mul ] binary
+                  | else "unknown word: " w concat fail
+
+# `st words run_words` runs the words from the left.
+run_words :: (List Int) (List String) -- (List Int) ! Fail
+run_words = let st ws in ws match
+  | Nil st
+  | Cons let w rest in st w step rest run_words
+
+# The one number that has to be left on the stack.
+single :: (List Int) -- Int ! Fail
+single = match
+  | Nil "the stack is empty" fail
+  | Cons let n rest in rest match
+      | Nil n
+      | Cons drop drop "too many values are left" fail
+
+evaluate :: String -- (Result String Int)
+evaluate = let line in [ Nil line " " split run_words single ] try
+
+main :: -- ! IO
+main = read evaluate match
+  | Ok show print
+  | Err "error: " swap concat print
+
+test_adds = "1 2 add" evaluate 0 unwrap_or 3 eq
+test_sequence = "3 4 add 2 mul" evaluate 0 unwrap_or 14 eq
+test_blanks = "  5   6 sub " evaluate 0 unwrap_or -1 eq
+test_underflow = "add" evaluate is_err
+test_unknown = "1 frob" evaluate is_err
+test_leftover = "1 2" evaluate is_err

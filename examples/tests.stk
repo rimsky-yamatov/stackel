@@ -1,0 +1,7 @@
+# Tests are the words whose names start with `test_`. Each leaves one Bool: true passes.
+#   cargo run -- test examples/tests.stk
+double = dup add
+
+test_double = 4 double 8 eq
+test_add = 1 2 add 3 eq
+test_substring = "hello" 1 3 substring "el" eq

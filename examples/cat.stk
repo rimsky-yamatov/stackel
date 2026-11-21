@@ -1,0 +1,19 @@
+# Prints the files named on the command line:
+#   cargo run -- run examples/cat.stk README.md
+use std.sys (args, read_file)
+use std.list (List, Nil, Cons)
+use std.result (Result, Ok, Err)
+
+# Prints the file, or the reason it cannot be read (on the error output).
+show_file :: String -- ! IO Fs
+show_file = read_file match
+  | Ok print
+  | Err eprint
+
+print_files :: (List String) -- ! IO Fs
+print_files = match
+  | Nil
+  | Cons let path rest in path show_file rest print_files
+
+main :: -- ! IO Fs Env
+main = args print_files

@@ -1,0 +1,32 @@
+# std.option: an optional value.
+module std.option
+
+pub type Option a = None | Some a
+
+pub is_some :: (Option a) -- Bool
+pub is_some = match
+  | None false
+  | Some drop true
+
+pub is_none :: (Option a) -- Bool
+pub is_none = match
+  | None true
+  | Some drop false
+
+# `opt default unwrap_or` is the value inside `opt`, or `default`.
+pub unwrap_or :: (Option a) a -- a
+pub unwrap_or = let opt default in opt match
+  | None default
+  | Some
+
+# `opt [f] map` applies `f` to the value inside `opt`.
+pub map :: (Option a) [a -- b ! e] -- (Option b) ! e
+pub map = let opt f in opt match
+  | None None
+  | Some f apply Some
+
+# `opt [f] and_then`: `f` returns an option itself.
+pub and_then :: (Option a) [a -- (Option b) ! e] -- (Option b) ! e
+pub and_then = let opt f in opt match
+  | None None
+  | Some f apply

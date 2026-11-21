@@ -1,0 +1,13 @@
+# Data types and match: an optional value.
+module option
+
+type Option a = None | Some a
+
+describe :: (Option Int) -- String
+describe = match
+  | None "none"
+  | Some show
+
+main :: -- ! IO
+main = 5 Some describe print
+       None describe print

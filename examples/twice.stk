@@ -1,0 +1,8 @@
+# A higher-order word: apply a quotation twice.
+module twice
+
+twice :: Int [Int -- Int] -- Int
+twice = dup rot swap apply swap apply
+
+main :: -- ! IO
+main = 3 [ 1 add ] twice show print

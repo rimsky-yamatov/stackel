@@ -1,0 +1,86 @@
+# std.list: singly linked lists.
+module std.list
+
+use std.option (Option, None, Some)
+
+pub type List a = Nil | Cons a (List a)
+
+# The functions below are loops (tail calls with an accumulator), so they use
+# no native stack, however long the list is.
+
+pub size :: (List a) -- Int
+pub size = 0 size_acc
+
+size_acc :: (List a) Int -- Int
+size_acc = let xs n in xs match
+  | Nil n
+  | Cons let x tl in tl n 1 add size_acc
+
+pub reverse :: (List a) -- (List a)
+pub reverse = Nil rev_onto
+
+# `xs acc rev_onto` pushes the elements of `xs` onto `acc`, one by one.
+rev_onto :: (List a) (List a) -- (List a)
+rev_onto = let xs acc in xs match
+  | Nil acc
+  | Cons let x tl in tl x acc Cons rev_onto
+
+pub append :: (List a) (List a) -- (List a)
+pub append = let xs ys in xs reverse ys rev_onto
+
+# `xs [f] map` is the list of `f` applied to each element.
+pub map :: (List a) [a -- b ! e] -- (List b) ! e
+pub map = let xs f in xs f Nil map_acc reverse
+
+map_acc :: (List a) [a -- b ! e] (List b) -- (List b) ! e
+map_acc = let xs f acc in xs match
+  | Nil acc
+  | Cons let x tl in tl f x f apply acc Cons map_acc
+
+# `xs [p] filter` keeps the elements for which `p` gives true.
+pub filter :: (List a) [a -- Bool ! e] -- (List a) ! e
+pub filter = let xs f in xs f Nil filter_acc reverse
+
+filter_acc :: (List a) [a -- Bool ! e] (List a) -- (List a) ! e
+filter_acc = let xs f acc in xs match
+  | Nil acc
+  | Cons let x tl in x f apply
+    | then tl f x acc Cons filter_acc
+    | else tl f acc filter_acc
+
+# `xs init [f] fold` combines the elements from the left: `init x1 f`, then `x2 f`, ...
+pub fold :: (List a) b [b a -- b ! e] -- b ! e
+pub fold = let xs acc f in xs match
+  | Nil acc
+  | Cons let x tl in tl acc x f apply f fold
+
+# `xs [f] each` runs `f` on each element, from the left, for its effects.
+pub each :: (List a) [a -- ! e] -- ! e
+pub each = let xs f in xs match
+  | Nil
+  | Cons let x tl in x f apply tl f each
+
+# `lo hi range` is the list lo, lo+1, ..., hi-1.
+pub range :: Int Int -- (List Int)
+pub range = Nil range_acc
+
+range_acc :: Int Int (List Int) -- (List Int)
+range_acc = let lo hi acc in lo hi lt
+  | then lo hi 1 sub hi 1 sub acc Cons range_acc
+  | else acc
+
+pub sum :: (List Int) -- Int
+pub sum = 0 [ add ] fold
+
+pub head :: (List a) -- (Option a)
+pub head = match
+  | Nil None
+  | Cons drop Some
+
+# `xs n nth` is the element at index `n` (counting from 0), if there is one.
+pub nth :: (List a) Int -- (Option a)
+pub nth = let xs i in xs match
+  | Nil None
+  | Cons let x tl in i 0 eq
+    | then x Some
+    | else tl i 1 sub nth

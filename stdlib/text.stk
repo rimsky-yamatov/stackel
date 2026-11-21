@@ -1,0 +1,50 @@
+# std.text: helpers for text, written with the string words and lists.
+module std.text
+
+use std.list (List, Nil, Cons, reverse, fold)
+use std.option (Option, None, Some)
+
+# `s prefix starts_with`
+pub starts_with :: String String -- Bool
+pub starts_with = let s p in s 0 p length substring p eq
+
+# `s suffix ends_with`
+pub ends_with :: String String -- Bool
+pub ends_with = let s p in s s length p length sub s length substring p eq
+
+# `s part contains`
+pub contains :: String String -- Bool
+pub contains = index_of -1 ne
+
+# `s sep split` cuts `s` at every `sep`: `"a,b" "," split` is the list "a", "b".
+# An empty `sep` cuts nothing.
+pub split :: String String -- (List String)
+pub split = let s sep in sep length 0 le
+  | then s Nil Cons
+  | else s sep Nil split_acc reverse
+
+# `s sep acc split_acc` puts the pieces of `s`, from the left, in front of `acc`.
+split_acc :: String String (List String) -- (List String)
+split_acc = let s sep acc in s sep index_of let i in i 0 lt
+  | then s acc Cons
+  | else s i sep length add s length substring sep s 0 i substring acc Cons split_acc
+
+# `strings sep join` puts `sep` between the strings.
+pub join :: (List String) String -- String
+pub join = let xs sep in xs match
+  | Nil ""
+  | Cons let x tl in tl x [ let a y in a sep concat y concat ] fold
+
+pub lines :: String -- (List String)
+pub lines = "\n" split
+
+# `s to_int` is the number in `s`, if it is one.
+pub to_int :: String -- (Option Int)
+pub to_int = parse_int
+  | then Some
+  | else drop None
+
+pub to_float :: String -- (Option Float)
+pub to_float = parse_float
+  | then Some
+  | else drop None

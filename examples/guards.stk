@@ -1,0 +1,14 @@
+# Guards can nest in the else branch.
+module guards
+
+sign :: Int -- String
+sign = dup 0 lt
+  | then drop "negative"
+  | else 0 eq
+    | then "zero"
+    | else "positive"
+
+main :: -- ! IO
+main = -5 sign print
+       0 sign print
+       7 sign print

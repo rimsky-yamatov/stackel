@@ -1,0 +1,10 @@
+# Factorial by recursion, using a guard.
+module fact
+
+fact :: Int -- Int
+fact = dup 1 le
+  | then drop 1
+  | else dup 1 sub fact mul
+
+main :: -- ! IO
+main = 10 fact show print

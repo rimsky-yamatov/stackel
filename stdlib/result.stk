@@ -1,0 +1,43 @@
+# std.result: the result of a computation that can fail.
+module std.result
+
+pub type Result e a = Ok a | Err e
+
+pub is_ok :: (Result e a) -- Bool
+pub is_ok = match
+  | Ok drop true
+  | Err drop false
+
+pub is_err :: (Result e a) -- Bool
+pub is_err = match
+  | Ok drop false
+  | Err drop true
+
+# `res default unwrap_or` is the value inside `Ok`, or `default`.
+pub unwrap_or :: (Result e a) a -- a
+pub unwrap_or = let res default in res match
+  | Ok
+  | Err drop default
+
+# `res [f] map` applies `f` to the value inside `Ok`.
+pub map :: (Result e a) [a -- b ! x] -- (Result e b) ! x
+pub map = let res f in res match
+  | Ok f apply Ok
+  | Err Err
+
+# `res [f] map_err` applies `f` to the error inside `Err`.
+pub map_err :: (Result e a) [e -- g ! x] -- (Result g a) ! x
+pub map_err = let res f in res match
+  | Ok Ok
+  | Err f apply Err
+
+# `[body] try` runs `body`, which may `fail`. The result is `Ok` of the value that `body`
+# leaves, or `Err` of the message of the failure. The other effects of `body` stay.
+pub try :: [-- a ! Fail e] -- (Result String a) ! e
+pub try = __try
+
+# `res [f] and_then`: `f` returns a result itself.
+pub and_then :: (Result e a) [a -- (Result e b) ! x] -- (Result e b) ! x
+pub and_then = let res f in res match
+  | Ok f apply
+  | Err Err

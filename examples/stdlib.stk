@@ -1,0 +1,8 @@
+# The standard library (std.list and std.option are written in Stackel).
+use std.list (range, map, filter, sum, size, head)
+use std.option (unwrap_or)
+
+main :: -- ! IO
+main = 1 11 range [ dup mul ] map sum show print                    # 385: the squares of 1..10
+       1 11 range [ 2 mod 0 eq ] filter size show print             # 5: the even numbers
+       1 11 range [ 5 gt ] filter head 0 unwrap_or show print       # 6: the first one above 5

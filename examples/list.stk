@@ -1,0 +1,19 @@
+# A recursive data type: a singly linked list.
+module list
+
+type List a = Nil | Cons a (List a)
+
+sum :: (List Int) -- Int
+sum = match
+  | Nil 0
+  | Cons sum add
+
+size :: (List a) -- Int
+size = match
+  | Nil 0
+  | Cons swap drop size 1 add
+
+main :: -- ! IO
+main = 1 2 3 Nil Cons Cons Cons
+       dup sum show print
+       size show print

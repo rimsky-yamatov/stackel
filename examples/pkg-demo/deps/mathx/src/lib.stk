@@ -1,0 +1,8 @@
+# The root module of the package `mathx` (`use mathx`).
+module mathx
+
+pub square :: Int -- Int
+pub square = dup mul
+
+pub cube :: Int -- Int
+pub cube = dup square mul

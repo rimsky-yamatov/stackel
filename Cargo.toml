@@ -1,0 +1,7 @@
+[package]
+name = "stackel"
+version = "0.1.0"
+edition = "2021"
+description = "Stackel: a pure, stack-oriented functional language with effect types"
+
+[dependencies]

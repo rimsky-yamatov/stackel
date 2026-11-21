@@ -1,0 +1,10 @@
+# Tail calls run in constant space: this loops one million times.
+module countdown
+
+count :: Int -- Int
+count = dup 0 le
+  | then
+  | else 1 sub count
+
+main :: -- ! IO
+main = 1000000 count show print
