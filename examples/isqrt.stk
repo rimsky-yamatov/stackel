@@ -1,0 +1,24 @@
+# Integer square root by binary search.
+module isqrt
+
+# `n lo hi search` finds the largest r in [lo, hi] with r*r <= n.
+search :: Int Int Int -- Int
+search = let n lo hi in lo hi ge
+  | then lo
+  | else lo hi add 1 add 2 div let mid in mid mid mul n gt
+    | then n lo mid 1 sub search
+    | else n mid hi search
+
+isqrt :: Int -- Int
+isqrt = let n in n 0 n 1 add search
+
+test_exact = 144 isqrt 12 eq
+test_floor = 150 isqrt 12 eq
+test_small = 3 isqrt 1 eq
+test_zero = 0 isqrt 0 eq
+
+main :: -- ! IO
+main = 0 isqrt show print
+       99 isqrt show print
+       100 isqrt show print
+       1000000 isqrt show print
