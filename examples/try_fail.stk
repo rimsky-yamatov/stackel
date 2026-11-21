@@ -1,0 +1,24 @@
+# Failure as an effect: `fail` stops a computation, `try` turns it into a `Result`.
+module try_fail
+
+use std.result (Result, Ok, Err, try)
+
+# Fails unless the number is positive. The `Fail` effect appears in the signature.
+positive :: Int -- Int ! Fail
+positive = dup 0 gt
+  | then
+  | else drop "not positive" fail
+
+# Sums a few numbers and fails on the first one that is not positive.
+checked_sum :: Int Int Int -- Int ! Fail
+checked_sum = positive rot positive rot positive add add
+
+show_result :: (Result String Int) -- String
+show_result = match
+  | Ok show "sum = " swap concat
+  | Err "failed: " swap concat
+
+main :: -- ! IO
+main = [ 1 2 3 checked_sum ] try show_result print
+       [ 1 -2 3 checked_sum ] try show_result print
+       [ 0 2 3 checked_sum ] try show_result print
