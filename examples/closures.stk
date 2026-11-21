@@ -1,0 +1,22 @@
+# `let` names the values on the stack, and quotations capture those names (closures).
+module closures
+
+# `n adder` is a quotation that adds n.
+adder :: Int -- [Int -- Int]
+adder = let n in [ n add ]
+
+# `f g compose` runs f, then g.
+compose :: [a -- b] [b -- c] -- [a -- c]
+compose = let f g in [ f apply g apply ]
+
+# `n f times` applies the quotation f n times.
+times :: Int [Int -- Int] Int -- Int
+times = let n f x in n 0 le
+  | then x
+  | else n 1 sub f x f apply times
+
+main :: -- ! IO
+main = 10 5 adder apply show print
+       3 10 adder 4 adder compose apply show print
+       5 [ 2 mul ] 1 times show print
+       10 [ 2 mul ] 1 times show print
