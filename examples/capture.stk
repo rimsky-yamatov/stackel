@@ -1,0 +1,18 @@
+# `capture` runs a quotation that prints and returns what it printed as a string.
+# The quotation must leave one value; `capture` gives that value and then the text.
+# The `IO` effect is removed, so `shout` below is a pure word.
+module capture
+
+use std.text (lines)
+use std.list (size)
+
+greet :: String -- ! IO
+greet = "Hello, " swap concat print
+
+# The text that `greet` would print, in capital letters (a pure word: no `! IO`).
+shout :: String -- String
+shout = let name in [ name greet 0 ] capture swap drop trim upper
+
+main :: -- ! IO
+main = "world" shout print
+       [ "one" print "two" print "three" print 0 ] capture swap drop trim lines size show print
