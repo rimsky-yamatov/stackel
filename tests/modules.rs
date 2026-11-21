@@ -88,6 +88,18 @@ fn private_words_stay_private_when_written_qualified() {
 }
 
 #[test]
+fn private_types_stay_private_when_written_qualified() {
+    let fs = MemFs::new()
+        .with(
+            "main.stk",
+            "use util\n\nf :: util.Hidden -- Int\nf = drop 1\n\nmain :: -- ! IO\nmain = 5 show print\n",
+        )
+        .with("util.stk", "type Hidden = Hid\n");
+    let e = err(&fs, "main.stk");
+    assert!(e.contains("unknown type `util.Hidden`"), "{}", e);
+}
+
+#[test]
 fn unknown_names_are_rejected() {
     let fs = MemFs::new()
         .with("main.stk", "use util (nothing)\n\nmain = 1 drop\n")

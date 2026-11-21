@@ -967,7 +967,8 @@ impl<'a> Rewriter<'a> {
         let found = if name.contains('.') {
             match self.scope.qual_types.get(name) {
                 Some(g) => Found::One(g.clone()),
-                None => Found::Missing,
+                // See `value`: a private type's global name must not be reachable this way.
+                None => return Err(format!("unknown type `{}`", name)),
             }
         } else {
             self.scope.types.lookup(name)
