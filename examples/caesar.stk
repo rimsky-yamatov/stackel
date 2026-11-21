@@ -1,0 +1,30 @@
+# The Caesar cipher: shift letters by k places, leaving everything else alone.
+module caesar
+
+# `c k shift_char` shifts one character.
+shift_char :: String Int -- String
+shift_char = let c k in c ord let code in
+  code 65 ge code 90 le and
+  | then code 65 sub k add 26 mod 65 add chr
+  | else code 97 ge code 122 le and
+    | then code 97 sub k add 26 mod 97 add chr
+    | else c
+
+# `s k encode` shifts every character of s.
+encode :: String Int -- String
+encode = let s k in s length 0 le
+  | then ""
+  | else s 0 1 substring k shift_char s 1 s length substring k encode concat
+
+# Decoding is shifting back. (`mod` of a negative number is negative, so shift by 26 - k.)
+decode :: String Int -- String
+decode = 26 swap sub encode
+
+test_round_trip = "Hello, World!" 3 encode 3 decode "Hello, World!" eq
+test_rot13 = "Hello" 13 encode "Uryyb" eq
+
+main :: -- ! IO
+main = "Hello, World!" 3 encode print
+       "Khoor, Zruog!" 3 decode print
+       "Stackel" 13 encode print
+       "Stackel" 13 encode 13 encode print
