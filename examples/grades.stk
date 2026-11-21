@@ -1,0 +1,27 @@
+# Classifying scores with guards that nest in `else`.
+module grades
+
+use std.list (List, Nil, Cons, map, each)
+
+grade :: Int -- String
+grade = let score in score 90 ge
+  | then "A"
+  | else score 80 ge
+    | then "B"
+    | else score 70 ge
+      | then "C"
+      | else score 60 ge
+        | then "D"
+        | else "F"
+
+# `score label` prints a line such as "85 -> B".
+line :: Int -- String
+line = dup show " -> " concat swap grade concat
+
+test_a = 95 grade "A" eq
+test_boundary = 80 grade "B" eq
+test_fail = 12 grade "F" eq
+
+main :: -- ! IO
+main = 100 Nil Cons 85 swap Cons 79 swap Cons 60 swap Cons 59 swap Cons
+       [ line print ] each
