@@ -575,7 +575,7 @@ mod tests {
         assert!(parse_src("f = 1 ]").is_err()); // stray `]`
         assert!(parse_src("  f = 1").is_err()); // must start at column 1
         assert!(parse_src("f 1").is_err()); // missing `=`
-        assert!(parse_src("type T = A | B").is_err()); // not supported yet
+        assert!(parse_src("type T = ").is_err()); // a data type needs at least one constructor
     }
 
     #[test]
