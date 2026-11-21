@@ -1,0 +1,7 @@
+ok: 42
+error: division by zero
+error: not a number: eighty
+ok: 102
+error: failed: division by zero
+-1
+true

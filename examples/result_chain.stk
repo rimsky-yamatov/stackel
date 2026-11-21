@@ -1,0 +1,36 @@
+# Chaining computations that may fail, with `Result` from the standard library.
+module result_chain
+
+use std.result (Result, Ok, Err, map, map_err, and_then, unwrap_or, is_ok)
+use std.text (to_int)
+use std.option (Option, None, Some)
+
+# Parsing a number: an `Option` becomes a `Result` with a message.
+parse :: String -- (Result String Int)
+parse = dup to_int match
+  | None "not a number: " swap concat Err
+  | Some swap drop Ok
+
+# Division that reports the problem as a value instead of failing.
+safe_div :: Int Int -- (Result String Int)
+safe_div = let a b in b 0 eq
+  | then "division by zero" Err
+  | else a b div Ok
+
+# `a_text b_text divide_texts` parses both and divides.
+divide_texts :: String String -- (Result String Int)
+divide_texts = let a b in a parse [ let x in b parse [ let y in x y safe_div ] and_then ] and_then
+
+report :: (Result String Int) -- String
+report = match
+  | Ok show "ok: " swap concat
+  | Err "error: " swap concat
+
+main :: -- ! IO
+main = "84" "2" divide_texts report print
+       "84" "0" divide_texts report print
+       "eighty" "2" divide_texts report print
+       "10" "5" divide_texts [ 100 add ] map report print
+       "10" "0" divide_texts [ "failed: " swap concat ] map_err report print
+       "x" parse -1 unwrap_or show print
+       "42" parse is_ok show print
