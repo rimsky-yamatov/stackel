@@ -1,0 +1,31 @@
+# Floating-point numbers: Newton's method for square roots, and a temperature table.
+module float
+
+use std.list (range, map, each)
+
+# `x guess n newton` improves the guess for sqrt(x) n times.
+newton :: Float Float Int -- Float
+newton = let x g n in n 0 le
+  | then g
+  | else x g x g div add 2.0 div n 1 sub newton
+
+sqrt :: Float -- Float
+sqrt = 1.0 20 newton
+
+# Celsius to Fahrenheit.
+fahrenheit :: Float -- Float
+fahrenheit = 9.0 mul 5.0 div 32.0 add
+
+# An Int as a Float: print it and read it back.
+to_float :: Int -- Float
+to_float = show parse_float drop
+
+table_row :: Int -- ! IO
+table_row = let c in c show " C = " concat c to_float fahrenheit show concat " F" concat print
+
+main :: -- ! IO
+main = 2.0 sqrt show print
+       144.0 sqrt show print
+       0.5 0.25 add show print
+       1.0 3.0 div show print
+       0 5 range [ 25 mul ] map [ table_row ] each
