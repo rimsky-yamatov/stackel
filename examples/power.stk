@@ -1,0 +1,23 @@
+# Exponentiation by squaring.
+module power
+
+# `base exp power` is base to the power exp (exp >= 0).
+power :: Int Int -- Int
+power = let b e in e 0 eq
+  | then 1
+  | else e 1 eq
+    # Stop at 1: squaring once more would overflow for large results.
+    | then b
+    | else e 2 mod 0 eq
+      | then b b mul e 2 div power
+      | else b b b mul e 2 div power mul
+
+test_zero = 5 0 power 1 eq
+test_square = 7 2 power 49 eq
+test_big = 2 40 power 1099511627776 eq
+
+main :: -- ! IO
+main = 2 10 power show print
+       3 5 power show print
+       2 62 power show print
+       10 18 power show print

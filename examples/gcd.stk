@@ -1,0 +1,20 @@
+# Euclid's algorithm, and the least common multiple built on it.
+module gcd
+
+gcd :: Int Int -- Int
+gcd = let a b in b 0 eq
+  | then a
+  | else b a b mod gcd
+
+lcm :: Int Int -- Int
+lcm = let a b in a b gcd let g in a g div b mul
+
+test_gcd = 12 18 gcd 6 eq
+test_coprime = 17 5 gcd 1 eq
+test_lcm = 4 6 lcm 12 eq
+
+main :: -- ! IO
+main = 48 36 gcd show print
+       17 5 gcd show print
+       4 6 lcm show print
+       21 6 lcm show print
