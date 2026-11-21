@@ -1,0 +1,31 @@
+# Reversing a string and testing for palindromes.
+module reverse
+
+# `s rev` is s with its characters in the opposite order.
+rev :: String -- String
+rev = let s in s length 0 le
+  | then ""
+  | else s 1 s length substring rev s 0 1 substring concat
+
+# Letters only, in lower case: "A man, a plan" -> "amanaplan".
+letters :: String -- String
+letters = let s in s length 0 le
+  | then ""
+  | else s 0 1 substring lower let c in c ord let code in
+    code 97 ge code 122 le and
+    | then c s 1 s length substring letters concat
+    | else s 1 s length substring letters
+
+is_palindrome :: String -- Bool
+is_palindrome = letters dup rev eq
+
+test_rev = "stackel" rev "lekcats" eq
+test_empty = "" rev "" eq
+test_pal = "A man, a plan, a canal: Panama" is_palindrome
+test_not_pal = "stackel" is_palindrome not
+
+main :: -- ! IO
+main = "Hello, Stackel!" rev print
+       "racecar" is_palindrome show print
+       "A man, a plan, a canal: Panama" is_palindrome show print
+       "stackel" is_palindrome show print
