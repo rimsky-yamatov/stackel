@@ -1,0 +1,38 @@
+# An expression evaluator. Division by zero is a failure (`Fail`), caught with `try`.
+module expr
+
+use std.result (Result, Ok, Err, try)
+
+type Expr = Num Int | Add Expr Expr | Mul Expr Expr | Div Expr Expr | Neg Expr
+
+# The value of an expression. It may fail, and the signature says so.
+eval :: Expr -- Int ! Fail
+eval = match
+  | Num
+  | Add eval swap eval swap add
+  | Mul eval swap eval swap mul
+  | Div eval swap eval swap let a b in b 0 eq
+    | then "division by zero" fail
+    | else a b div
+  | Neg eval neg
+
+# Prints an expression with full parentheses.
+render :: Expr -- String
+render = match
+  | Num show
+  | Add render swap render swap " + " swap concat concat "(" swap concat ")" concat
+  | Mul render swap render swap " * " swap concat concat "(" swap concat ")" concat
+  | Div render swap render swap " / " swap concat concat "(" swap concat ")" concat
+  | Neg render "-" swap concat
+
+# `e run` prints the expression and its value, or the reason it failed.
+run :: Expr -- ! IO
+run = let e in e render " = " concat [ e eval ] try match
+  | Ok show concat print
+  | Err "error: " swap concat concat print
+
+main :: -- ! IO
+main = 2 Num 3 Num 4 Num Mul Add run
+       10 Num 2 Num 3 Num Add Div run
+       7 Num 0 Num Div run
+       5 Num Neg 6 Num Add run
