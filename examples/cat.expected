@@ -1,0 +1,6 @@
+# Hello, world.
+module hello
+
+main :: -- ! IO
+main = "Hello, Stackel!" print
+
