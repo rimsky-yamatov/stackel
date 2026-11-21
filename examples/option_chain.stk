@@ -1,0 +1,28 @@
+# Optional values: `Option` from the standard library, `head`, `nth`, `map` and `and_then`.
+module option_chain
+
+use std.option (Option, None, Some, map, and_then, unwrap_or, is_some, is_none)
+use std.list (List, Nil, Cons, head, nth, range)
+
+# The second element, doubled, or 0.
+second_doubled :: (List Int) -- Int
+second_doubled = 1 nth [ 2 mul ] map 0 unwrap_or
+
+# The first element, but only if it is above 10.
+first_big :: (List Int) -- (Option Int)
+first_big = head [ dup 10 gt | then Some | else drop None ] and_then
+
+describe :: (Option Int) -- String
+describe = match
+  | None "nothing"
+  | Some show "just " swap concat
+
+main :: -- ! IO
+main = 1 6 range second_doubled show print
+       5 Nil Cons second_doubled show print
+       Nil second_doubled show print
+       20 Nil Cons first_big describe print
+       3 Nil Cons first_big describe print
+       Nil first_big describe print
+       1 3 range head is_some show print
+       Nil head is_none show print
