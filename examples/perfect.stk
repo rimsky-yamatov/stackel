@@ -1,0 +1,14 @@
+# Perfect numbers: n equals the sum of its proper divisors. Lists, `filter` and `sum`.
+module perfect
+
+use std.list (List, range, filter, sum, each)
+
+# The proper divisors of n: the numbers below n that divide it.
+divisors :: Int -- (List Int)
+divisors = let n in 1 n range [ n swap mod 0 eq ] filter
+
+is_perfect :: Int -- Bool
+is_perfect = dup divisors sum eq
+
+main :: -- ! IO
+main = 2 1000 range [ is_perfect ] filter [ show print ] each
