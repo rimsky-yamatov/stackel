@@ -1,0 +1,18 @@
+# Command-line arguments and environment variables (the `Env` effect).
+#   cargo run -- run examples/args.stk one two three
+module args
+
+use std.sys (args, var)
+use std.list (List, each, size)
+use std.option (Option, None, Some)
+
+describe_var :: (Option String) -- String
+describe_var = match
+  | None "unset"
+  | Some "set to " swap concat
+
+main :: -- ! IO Env
+main = args let xs in
+       xs size show " arguments" concat print
+       xs [ "- " swap concat print ] each
+       "STACKEL_EXAMPLE_SURELY_UNSET" var describe_var print
