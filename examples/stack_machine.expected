@@ -1,0 +1,3 @@
+stack: 70
+stack: -7
+error: stack underflow

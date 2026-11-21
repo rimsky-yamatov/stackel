@@ -1,0 +1,62 @@
+# A tiny stack machine: a program is a list of instructions, the stack is a list of numbers
+# (its head is the top). Underflow is a `Fail`, caught with `try`.
+module stack_machine
+
+use std.list (List, Nil, Cons, map, reverse)
+use std.result (Result, Ok, Err, try)
+use std.text (join)
+
+type Instr = Push Int | Plus | Minus | Times | Dup | Swap
+
+# `st pop` is the top value and the rest of the stack.
+pop :: (List Int) -- Int (List Int) ! Fail
+pop = match
+  | Nil "stack underflow" fail Nil
+  | Cons
+
+# `st [f] binop` replaces the two top values a (deeper) and b (top) by `a b f`.
+binop :: (List Int) [Int Int -- Int] -- (List Int) ! Fail
+binop = let st f in st pop let b rest in rest pop let a tl in a b f apply tl Cons
+
+step :: (List Int) Instr -- (List Int) ! Fail
+step = let st i in i match
+  | Push st Cons
+  | Plus st [ add ] binop
+  | Minus st [ sub ] binop
+  | Times st [ mul ] binop
+  | Dup st pop let x rest in x x rest Cons Cons
+  | Swap st pop let b rest in rest pop let a tl in a b tl Cons Cons
+
+# `st prog run_all` runs the instructions from the left.
+run_all :: (List Int) (List Instr) -- (List Int) ! Fail
+run_all = let st prog in prog match
+  | Nil st
+  | Cons let i rest in st i step rest run_all
+
+# Builds programs left to right: `Nil 3 Push add_i Plus add_i reverse`.
+add_i :: (List Instr) Instr -- (List Instr)
+add_i = swap Cons
+
+show_stack :: (List Int) -- String
+show_stack = reverse [ show ] map " " join
+
+report :: (Result String (List Int)) -- String
+report = match
+  | Ok show_stack "stack: " swap concat
+  | Err "error: " swap concat
+
+# (3 + 4) * 5, doubled with `Dup Plus`.
+arith :: -- (List Instr)
+arith = Nil 3 Push add_i 4 Push add_i Plus add_i 5 Push add_i Times add_i Dup add_i Plus add_i reverse
+
+# 10 3 Swap Minus is 3 - 10.
+swapped :: -- (List Instr)
+swapped = Nil 10 Push add_i 3 Push add_i Swap add_i Minus add_i reverse
+
+broken :: -- (List Instr)
+broken = Nil 1 Push add_i Plus add_i reverse
+
+main :: -- ! IO
+main = [ Nil arith run_all ] try report print
+       [ Nil swapped run_all ] try report print
+       [ Nil broken run_all ] try report print
