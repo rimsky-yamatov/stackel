@@ -1,0 +1,16 @@
+# Counts the words and characters of the line on standard input, and shouts it back.
+#   echo "the quick brown fox" | cargo run -- run examples/wordcount.stk
+module wordcount
+
+use std.list (size, filter)
+use std.text (split)
+
+# Runs of spaces make empty pieces when splitting, so those are dropped before counting.
+words :: String -- Int
+words = " " split [ length 0 gt ] filter size
+
+main :: -- ! IO
+main = read let line in
+       line words show "words: " swap concat print
+       line length show "chars: " swap concat print
+       line upper "upper: " swap concat print
