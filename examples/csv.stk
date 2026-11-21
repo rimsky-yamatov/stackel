@@ -1,0 +1,26 @@
+# Parsing a small CSV table held in a string: split into lines and fields, sum a column.
+module csv
+
+use std.list (List, map, fold, nth, filter)
+use std.text (lines, split, to_int, join)
+use std.option (and_then, unwrap_or)
+
+data :: -- String
+data = "apple,3,120\nbanana,5,80\ncherry,10,15\n"
+
+# The rows that are not empty (the text ends with a newline), each split into fields.
+rows :: String -- (List (List String))
+rows = lines [ length 0 gt ] filter [ "," split ] map
+
+# The number in column i of a row, or 0.
+cell :: (List String) Int -- Int
+cell = nth [ to_int ] and_then 0 unwrap_or
+
+column_sum :: (List (List String)) Int -- Int
+column_sum = let rs i in rs 0 [ i cell add ] fold
+
+main :: -- ! IO
+main = data rows let rs in
+       rs 1 column_sum show print
+       rs 2 column_sum show print
+       rs [ 0 nth "?" unwrap_or ] map ", " join print
