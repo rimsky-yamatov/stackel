@@ -1,0 +1,44 @@
+# Leap years and the number of days in a month, with nested guards.
+module calendar
+
+use std.list (range, fold)
+
+is_leap :: Int -- Bool
+is_leap = let y in y 400 mod 0 eq
+  | then true
+  | else y 100 mod 0 eq
+    | then false
+    | else y 4 mod 0 eq
+
+# Guards nest only inside `else`, so February gets a word of its own.
+february :: Int -- Int
+february = is_leap
+  | then 29
+  | else 28
+
+# `year month days_in_month` (month 1..12)
+days_in_month :: Int Int -- Int
+days_in_month = let y m in m 2 eq
+  | then y february
+  | else m 4 eq m 6 eq or m 9 eq or m 11 eq or
+    | then 30
+    | else 31
+
+days_in_year :: Int -- Int
+days_in_year = let y in 1 13 range 0 [ y swap days_in_month add ] fold
+
+test_leap = 2024 is_leap
+test_century = 1900 is_leap not
+test_quad_century = 2000 is_leap
+test_feb = 2023 2 days_in_month 28 eq
+
+main :: -- ! IO
+main = 1900 is_leap show print
+       2000 is_leap show print
+       2024 is_leap show print
+       2026 is_leap show print
+       2024 2 days_in_month show print
+       2026 2 days_in_month show print
+       2026 11 days_in_month show print
+       2024 days_in_year show print
+       2026 days_in_year show print
