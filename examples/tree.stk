@@ -1,0 +1,59 @@
+# A binary search tree: insert, membership, size, height and an in-order traversal.
+module tree
+
+use std.list (List, Nil, Cons, append, fold, map)
+use std.text (join)
+
+type Tree = Leaf | Node Tree Int Tree
+
+# `t x insert` adds x to the tree t (duplicates are ignored).
+insert :: Tree Int -- Tree
+insert = let t x in t match
+  | Leaf Leaf x Leaf Node
+  | Node let l v r in x v lt
+    | then l x insert v r Node
+    | else x v gt
+      | then l v r x insert Node
+      | else l v r Node
+
+# `t x member`
+member :: Tree Int -- Bool
+member = let t x in t match
+  | Leaf false
+  | Node let l v r in x v eq
+    | then true
+    | else x v lt
+      | then l x member
+      | else r x member
+
+size :: Tree -- Int
+size = match
+  | Leaf 0
+  | Node let l v r in l size r size add 1 add
+
+height :: Tree -- Int
+height = match
+  | Leaf 0
+  | Node let l v r in l height r height let hl hr in hl hr gt
+    | then hl 1 add
+    | else hr 1 add
+
+# The values in increasing order, by an in-order walk.
+to_list :: Tree -- (List Int)
+to_list = match
+  | Leaf Nil
+  | Node let l v r in l to_list v r to_list Cons append
+
+from_list :: (List Int) -- Tree
+from_list = Leaf [ insert ] fold
+
+sample :: -- Tree
+sample = 5 Nil Cons 3 swap Cons 8 swap Cons 1 swap Cons 4 swap Cons 7 swap Cons 9 swap Cons 3 swap Cons
+         from_list
+
+main :: -- ! IO
+main = sample size show print
+       sample height show print
+       sample to_list [ show ] map " " join print
+       sample 7 member show print
+       sample 6 member show print
