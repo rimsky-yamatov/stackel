@@ -1,0 +1,32 @@
+# Pascal's triangle: each row is built from the previous one with lists.
+module pascal
+
+use std.list (List, Nil, Cons, map, reverse)
+use std.text (join)
+
+# The next row: add `0 row` and `row 0` element by element.
+next_row :: (List Int) -- (List Int)
+next_row = let r in 0 r Cons r reverse 0 swap Cons reverse zip_add
+
+# Adds two lists element by element (the lists have the same length here).
+zip_add :: (List Int) (List Int) -- (List Int)
+zip_add = Nil zip_acc reverse
+
+zip_acc :: (List Int) (List Int) (List Int) -- (List Int)
+zip_acc = let xs ys acc in xs match
+  | Nil acc
+  | Cons let x xtl in ys match
+    | Nil acc
+    | Cons let y ytl in xtl ytl x y add acc Cons zip_acc
+
+row_text :: (List Int) -- String
+row_text = [ show ] map " " join
+
+# `n rows_from row` prints n rows, starting from `row`.
+print_rows :: Int (List Int) -- ! IO
+print_rows = let n r in n 0 le
+  | then
+  | else r row_text print n 1 sub r next_row print_rows
+
+main :: -- ! IO
+main = 6 1 Nil Cons print_rows
