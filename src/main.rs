@@ -3,11 +3,14 @@ use std::io::{self, Write};
 use std::path::Path;
 use std::process;
 
+const USAGE: &str = "usage: stackel run [<file.stk> | <package directory> [arguments...]]
+       stackel check [<file.stk> | <package directory>]
+       stackel test [<file.stk> | <package directory>]
+       stackel repl
+       stackel --version";
+
 fn usage() -> ! {
-    eprintln!("usage: stackel run [<file.stk> | <package directory> [arguments...]]");
-    eprintln!("       stackel check [<file.stk> | <package directory>]");
-    eprintln!("       stackel test [<file.stk> | <package directory>]");
-    eprintln!("       stackel repl");
+    eprintln!("{}", USAGE);
     process::exit(2);
 }
 
@@ -51,6 +54,14 @@ fn run_cli() {
         Some(c) => c.as_str(),
         None => usage(),
     };
+    if command == "--version" || command == "-V" {
+        println!("stackel {}", env!("CARGO_PKG_VERSION"));
+        return;
+    }
+    if command == "--help" || command == "-h" {
+        println!("{}", USAGE);
+        return;
+    }
     if command == "repl" {
         if args.len() > 2 {
             usage();
