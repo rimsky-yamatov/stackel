@@ -1,0 +1,26 @@
+test_range_sum ... ok
+test_range_empty ... ok
+test_map ... ok
+test_filter ... ok
+test_fold ... ok
+test_reverse ... ok
+test_append ... ok
+test_head ... ok
+test_head_empty ... ok
+test_nth_out_of_range ... ok
+test_unwrap_or_some ... ok
+test_unwrap_or_none ... ok
+test_is_some ... ok
+test_ok ... ok
+test_err ... ok
+test_try_ok ... ok
+test_try_fail ... ok
+test_split ... ok
+test_join ... ok
+test_lines ... ok
+test_to_int ... ok
+test_to_int_bad ... ok
+test_starts_with ... ok
+test_ends_with ... ok
+test_contains ... ok
+25 tests: 25 passed, 0 failed

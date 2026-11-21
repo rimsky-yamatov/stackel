@@ -1,0 +1,41 @@
+# Unit tests for the standard library, run with `stackel test`.
+#   cargo run -- test examples/stdlib_tests.stk
+use std.list (List, Nil, Cons, range, map, filter, fold, sum, size, reverse, append, head, nth)
+use std.option (Option, None, Some, is_some, is_none, unwrap_or)
+use std.result (Result, Ok, Err, is_ok, is_err, try)
+use std.text (split, join, lines, to_int, starts_with, ends_with, contains)
+
+# Fails unless the number is positive (a quotation given to `try` must be able to fail).
+positive :: Int -- Int ! Fail
+positive = dup 0 gt
+  | then
+  | else drop "not positive" fail
+
+test_range_sum = 1 6 range sum 15 eq
+test_range_empty = 5 5 range size 0 eq
+test_map = 1 4 range [ 10 mul ] map sum 60 eq
+test_filter = 1 11 range [ 3 mod 0 eq ] filter size 3 eq
+test_fold = 1 5 range 1 [ mul ] fold 24 eq
+test_reverse = 1 4 range reverse 0 nth 0 unwrap_or 3 eq
+test_append = 1 3 range 3 5 range append size 4 eq
+test_head = 7 8 range head 0 unwrap_or 7 eq
+test_head_empty = Nil head is_none
+test_nth_out_of_range = 1 3 range 5 nth is_none
+
+test_unwrap_or_some = 4 Some 0 unwrap_or 4 eq
+test_unwrap_or_none = None 9 unwrap_or 9 eq
+test_is_some = 1 Some is_some
+
+test_ok = 1 Ok is_ok
+test_err = "bad" Err is_err
+test_try_ok = [ 5 positive ] try is_ok
+test_try_fail = [ 0 positive ] try is_err
+
+test_split = "a,b,c" "," split size 3 eq
+test_join = 1 4 range [ show ] map "-" join "1-2-3" eq
+test_lines = "x\ny" lines size 2 eq
+test_to_int = "42" to_int 0 unwrap_or 42 eq
+test_to_int_bad = "4x2" to_int is_none
+test_starts_with = "stackel" "stack" starts_with
+test_ends_with = "stackel" "kel" ends_with
+test_contains = "stackel" "ack" contains
