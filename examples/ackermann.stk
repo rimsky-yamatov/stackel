@@ -1,0 +1,18 @@
+# The Ackermann function: deep, non-tail recursion (the interpreter has a large stack).
+module ackermann
+
+ack :: Int Int -- Int
+ack = let m n in m 0 eq
+  | then n 1 add
+  | else n 0 eq
+    | then m 1 sub 1 ack
+    | else m 1 sub m n 1 sub ack ack
+
+test_ack_small = 1 2 ack 4 eq
+test_ack_three = 2 3 ack 9 eq
+
+main :: -- ! IO
+main = 0 0 ack show print
+       1 2 ack show print
+       2 3 ack show print
+       3 3 ack show print

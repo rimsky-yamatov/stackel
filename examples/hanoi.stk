@@ -1,0 +1,20 @@
+# Towers of Hanoi: print every move, then count them.
+module hanoi
+
+# `n from to via hanoi` moves n disks from the peg `from` to the peg `to`.
+hanoi :: Int String String String -- ! IO
+hanoi = let n from to via in n 0 eq
+  | then
+  | else n 1 sub from via to hanoi
+         "move disk " n show concat " from " concat from concat " to " concat to concat print
+         n 1 sub via to from hanoi
+
+# The number of moves for n disks is 2^n - 1.
+moves :: Int -- Int
+moves = dup 0 eq
+  | then drop 0
+  | else 1 sub moves 2 mul 1 add
+
+main :: -- ! IO
+main = 3 "A" "C" "B" hanoi
+       10 moves show print
