@@ -1,0 +1,6 @@
+# Keep line endings stable on every OS: golden test outputs and sources are compared byte for byte.
+* text=auto eol=lf
+*.stk text eol=lf
+*.expected text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
