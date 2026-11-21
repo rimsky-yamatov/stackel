@@ -1,0 +1,3 @@
+wrote target/stackel-fs-roundtrip.txt
+exists: true
+read back: written by Stackel

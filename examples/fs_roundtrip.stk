@@ -1,0 +1,25 @@
+# Files (the `Fs` effect): write a file under `target/`, check it exists, read it back.
+#   cargo run -- run examples/fs_roundtrip.stk
+module fs_roundtrip
+
+use std.sys (read_file, write_file)
+use std.result (Result, Ok, Err)
+
+path :: -- String
+path = "target/stackel-fs-roundtrip.txt"
+
+# The arms of a `match` run to the end of the definition, so each outcome gets its own word.
+report_write :: (Result String String) -- ! IO
+report_write = match
+  | Ok "wrote " swap concat print
+  | Err "cannot write: " swap concat print
+
+report_read :: (Result String String) -- ! IO
+report_read = match
+  | Ok "read back: " swap concat print
+  | Err "cannot read: " swap concat print
+
+main :: -- ! IO Fs
+main = path "written by Stackel" write_file report_write
+       path file_exists show "exists: " swap concat print
+       path read_file report_read
