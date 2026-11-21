@@ -1,0 +1,37 @@
+# Converting numbers to a string in any base from 2 to 16, and back.
+module binary
+
+# `n base to_base` writes n (>= 0) in the given base.
+to_base :: Int Int -- String
+to_base = let n base in n base lt
+  | then n digit
+  | else n base div base to_base n base mod digit concat
+
+# One digit, 0..15, as a character.
+digit :: Int -- String
+digit = dup 10 lt
+  | then 48 add chr
+  | else 55 add chr
+
+# `s base from_base` reads the digits of s (upper case) in the given base.
+from_base :: String Int -- Int
+from_base = let s base in s length 0 eq
+  | then 0
+  | else s 0 s length 1 sub substring base from_base base mul
+         s s length 1 sub s length substring ord value add
+
+value :: Int -- Int
+value = dup 58 lt
+  | then 48 sub
+  | else 55 sub
+
+test_binary = 10 2 to_base "1010" eq
+test_hex = 255 16 to_base "FF" eq
+test_round_trip = "BEEF" 16 from_base 16 to_base "BEEF" eq
+
+main :: -- ! IO
+main = 10 2 to_base print
+       255 16 to_base print
+       255 8 to_base print
+       "11111111" 2 from_base show print
+       "CAFE" 16 from_base show print
