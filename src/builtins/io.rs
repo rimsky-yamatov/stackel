@@ -2,8 +2,6 @@
 //!
 //! `print` and `read` have the effect `IO`.
 
-use std::io::Write;
-
 use crate::error::{Error, Result};
 use crate::eval::Interp;
 use crate::value::Value;
