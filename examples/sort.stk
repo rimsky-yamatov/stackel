@@ -1,0 +1,37 @@
+# Sorting lists of numbers: insertion sort and quicksort, written with `match` and `let`.
+module sort
+
+use std.list (List, Nil, Cons, append, filter, map)
+use std.text (join)
+
+# `x xs insert` puts x into the sorted list xs.
+insert :: Int (List Int) -- (List Int)
+insert = let x xs in xs match
+  | Nil x Nil Cons
+  | Cons let y rest in x y le
+    | then x y rest Cons Cons
+    | else y x rest insert Cons
+
+insertion_sort :: (List Int) -- (List Int)
+insertion_sort = match
+  | Nil Nil
+  | Cons let x rest in x rest insertion_sort insert
+
+quicksort :: (List Int) -- (List Int)
+quicksort = match
+  | Nil Nil
+  | Cons let p rest in
+      rest [ p lt ] filter quicksort
+      p rest [ p ge ] filter quicksort Cons
+      append
+
+show_list :: (List Int) -- ! IO
+show_list = [ show ] map " " join print
+
+sample :: -- (List Int)
+sample = 5 Nil Cons 2 swap Cons 9 swap Cons 1 swap Cons 5 swap Cons 6 swap Cons
+
+main :: -- ! IO
+main = sample show_list
+       sample insertion_sort show_list
+       sample quicksort show_list
