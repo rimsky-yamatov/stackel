@@ -1,0 +1,15 @@
+# The stack words, one line each. The comment after `#` shows the stack (top on the right).
+module stack_ops
+
+main :: -- ! IO
+main = 1 2 swap sub show print          # 2 1 -> 2 - 1 = 1
+       5 dup mul show print             # 5 5 -> 25
+       3 4 over add add show print      # 3 4 3 -> 3 + 4 + 3 = 10
+       1 2 3 rot add add show print     # 2 3 1 -> 6
+       7 8 drop show print              # 7
+       10 3 sub show print              # `a b sub` is a - b: 7
+       10 3 div show print              # 3 (integer division)
+       10 3 mod show print              # 1
+       2 3 lt show print                # true
+       "a" "b" lt show print            # true: strings compare in order
+       true false or show print         # true
