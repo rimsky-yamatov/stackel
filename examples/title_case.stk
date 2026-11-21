@@ -1,0 +1,22 @@
+# Text helpers from `std.text`: split into words, capitalise each, and join again.
+module title_case
+
+use std.list (map, filter)
+use std.text (split, join, starts_with, ends_with, contains)
+
+capitalise :: String -- String
+capitalise = let w in w length 0 eq
+  | then w
+  | else w 0 1 substring upper w 1 w length substring lower concat
+
+title :: String -- String
+title = " " split [ length 0 gt ] filter [ capitalise ] map " " join
+
+main :: -- ! IO
+main = "the quick  BROWN fox" title print
+       "stackel" capitalise print
+       "stack-oriented" "stack" starts_with show print
+       "stack-oriented" "ted" ends_with show print
+       "stack-oriented" "-or" contains show print
+       "stack-oriented" "xyz" contains show print
+       "  padded  " trim length show print
