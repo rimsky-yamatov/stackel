@@ -1,0 +1,38 @@
+# Working with the decimal digits of a number.
+module digits
+
+# `n digit_sum` is the sum of the digits of n (n >= 0).
+digit_sum :: Int -- Int
+digit_sum = dup 10 lt
+  | then
+  | else dup 10 mod swap 10 div digit_sum add
+
+# `n digit_count` is how many digits n has.
+digit_count :: Int -- Int
+digit_count = dup 10 lt
+  | then drop 1
+  | else 10 div digit_count 1 add
+
+# `n acc reverse_digits` builds the number with the digits of n in the opposite order.
+reverse_acc :: Int Int -- Int
+reverse_acc = let n acc in n 0 eq
+  | then acc
+  | else n 10 div acc 10 mul n 10 mod add reverse_acc
+
+reverse_digits :: Int -- Int
+reverse_digits = 0 reverse_acc
+
+is_palindrome :: Int -- Bool
+is_palindrome = dup reverse_digits eq
+
+test_sum = 12345 digit_sum 15 eq
+test_count = 1000 digit_count 4 eq
+test_reverse = 1230 reverse_digits 321 eq
+
+main :: -- ! IO
+main = 12345 digit_sum show print
+       9 digit_sum show print
+       1234567 digit_count show print
+       12345 reverse_digits show print
+       12321 is_palindrome show print
+       12345 is_palindrome show print
