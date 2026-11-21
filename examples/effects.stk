@@ -1,0 +1,22 @@
+# Effect polymorphism: `map` has the effect of the quotation it is given.
+module effects
+
+use std.list (List, Nil, Cons, map, each, range)
+
+double :: Int -- Int
+double = dup add
+
+# A pure use: `squares` is a pure word, although `map` is generic over effects.
+squares :: (List Int) -- (List Int)
+squares = [ dup mul ] map
+
+# An effectful use: the quotation prints, so `trace_all` has the effect `IO`.
+trace_all :: (List Int) -- (List Int) ! IO
+trace_all = [ dup show "visiting " swap concat print double ] map
+
+total :: (List Int) -- Int
+total = 0 [ add ] std.list.fold
+
+main :: -- ! IO
+main = 1 4 range squares [ show print ] each
+       1 4 range trace_all total show print
