@@ -1,0 +1,16 @@
+# FizzBuzz for 1..20, with nested guards and `std.list.each`.
+module fizzbuzz
+
+use std.list (range, each)
+
+fizzbuzz :: Int -- String
+fizzbuzz = let n in n 15 mod 0 eq
+  | then "FizzBuzz"
+  | else n 3 mod 0 eq
+    | then "Fizz"
+    | else n 5 mod 0 eq
+      | then "Buzz"
+      | else n show
+
+main :: -- ! IO
+main = 1 21 range [ fizzbuzz print ] each

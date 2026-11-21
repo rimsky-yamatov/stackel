@@ -1,0 +1,18 @@
+# Fibonacci numbers: a loop with two accumulators (a tail call, so constant stack).
+module fib
+
+use std.list (range, map, each)
+
+# `a b n fib_loop` is the n-th number after the pair (a, b).
+fib_loop :: Int Int Int -- Int
+fib_loop = let a b n in n 0 eq
+  | then a
+  | else b a b add n 1 sub fib_loop
+
+fib :: Int -- Int
+fib = 0 1 rot fib_loop
+
+main :: -- ! IO
+main = 0 15 range [ fib ] map [ show print ] each
+       50 fib show print
+       90 fib show print
