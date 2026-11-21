@@ -1,0 +1,46 @@
+# Roman numerals: a table of (value, symbol) pairs kept in a list of a small data type.
+module roman
+
+use std.list (List, Nil, Cons)
+
+type Pair = Pair Int String
+
+table :: -- (List Pair)
+table = 1 "I" Pair Nil Cons
+        4 "IV" Pair swap Cons
+        5 "V" Pair swap Cons
+        9 "IX" Pair swap Cons
+        10 "X" Pair swap Cons
+        40 "XL" Pair swap Cons
+        50 "L" Pair swap Cons
+        90 "XC" Pair swap Cons
+        100 "C" Pair swap Cons
+        400 "CD" Pair swap Cons
+        500 "D" Pair swap Cons
+        900 "CM" Pair swap Cons
+        1000 "M" Pair swap Cons
+
+# `n pairs acc to_roman_with` uses the largest entry first; `pairs` goes from large to small.
+to_roman_with :: Int (List Pair) String -- String
+to_roman_with = let n pairs acc in n 0 eq
+  | then acc
+  | else pairs match
+    | Nil acc
+    | Cons let p rest in p match
+      | Pair let value symbol in n value ge
+        | then n value sub pairs acc symbol concat to_roman_with
+        | else n rest acc to_roman_with
+
+to_roman :: Int -- String
+to_roman = table "" to_roman_with
+
+test_small = 4 to_roman "IV" eq
+test_year = 1994 to_roman "MCMXCIV" eq
+
+main :: -- ! IO
+main = 1 to_roman print
+       9 to_roman print
+       14 to_roman print
+       1994 to_roman print
+       2026 to_roman print
+       3999 to_roman print
