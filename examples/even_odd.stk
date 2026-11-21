@@ -1,0 +1,17 @@
+# Mutually recursive words need signatures. Both calls are tail calls.
+module even_odd
+
+is_even :: Int -- Bool
+is_even = dup 0 eq
+  | then drop true
+  | else 1 sub is_odd
+
+is_odd :: Int -- Bool
+is_odd = dup 0 eq
+  | then drop false
+  | else 1 sub is_even
+
+main :: -- ! IO
+main = 10 is_even show print
+       7 is_even show print
+       100001 is_odd show print
