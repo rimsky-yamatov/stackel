@@ -1,0 +1,8 @@
+# The root module of the package `logger`: it only needs the `IO` effect.
+module logger
+
+pub info :: String -- ! IO
+pub info = "[info] " swap concat print
+
+pub warn :: String -- ! IO
+pub warn = "[warn] " swap concat print

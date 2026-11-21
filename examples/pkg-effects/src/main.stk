@@ -1,0 +1,9 @@
+# The entry module of a package whose dependency logs to the console.
+module main
+
+use logger (info, warn)
+
+main :: -- ! IO
+main = "starting" info
+       "disk is almost full" warn
+       "done" info

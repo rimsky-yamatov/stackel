@@ -1,0 +1,9 @@
+# A dependency may be given an effect ceiling. `logger` is allowed to print (`IO`) but not to
+# touch files (`Fs`) or the environment (`Env`).
+#   cargo run -- run examples/pkg-effects
+[package]
+name = "pkg-effects"
+version = "0.1.0"
+
+[deps]
+logger = { path = "deps/logger", allow = ["IO"] }
