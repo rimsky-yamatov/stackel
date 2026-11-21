@@ -1,0 +1,22 @@
+# Primes below 50 by trial division, using `filter` from the standard library.
+module primes
+
+use std.list (range, filter, size, each)
+
+# `n d has_divisor` is true if some number from d up to sqrt(n) divides n.
+has_divisor :: Int Int -- Bool
+has_divisor = let n d in d d mul n gt
+  | then false
+  | else n d mod 0 eq
+    | then true
+    | else n d 1 add has_divisor
+
+is_prime :: Int -- Bool
+is_prime = let n in n 2 lt
+  | then false
+  | else n 2 has_divisor not
+
+main :: -- ! IO
+main = 0 50 range [ is_prime ] filter let ps in
+       ps [ show print ] each
+       ps size show print

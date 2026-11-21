@@ -1,0 +1,23 @@
+# The Collatz sequence: how many steps until a number reaches 1?
+module collatz
+
+# `n steps collatz_steps`
+collatz_steps :: Int Int -- Int
+collatz_steps = let n steps in n 1 eq
+  | then steps
+  | else n 2 mod 0 eq
+    | then n 2 div steps 1 add collatz_steps
+    | else n 3 mul 1 add steps 1 add collatz_steps
+
+collatz :: Int -- Int
+collatz = 0 collatz_steps
+
+test_one = 1 collatz 0 eq
+test_six = 6 collatz 8 eq
+test_twenty_seven = 27 collatz 111 eq
+
+main :: -- ! IO
+main = 1 collatz show print
+       6 collatz show print
+       27 collatz show print
+       97 collatz show print
