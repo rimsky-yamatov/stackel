@@ -67,15 +67,15 @@ fn check_words(
                     && !ctors.contains_key(name)
                     && !builtins::is_builtin(name)
                 {
-                    return Err(Error::new(
-                        format!("unknown word `{}`", name),
-                        *line,
-                        *col,
-                    ));
+                    return Err(Error::new(format!("unknown word `{}`", name), *line, *col));
                 }
             }
             Node::Quote(q) => check_words(defs, ctors, q, locals)?,
-            Node::If { then_branch, else_branch, .. } => {
+            Node::If {
+                then_branch,
+                else_branch,
+                ..
+            } => {
                 check_words(defs, ctors, then_branch, locals)?;
                 check_words(defs, ctors, else_branch, locals)?;
             }
@@ -318,7 +318,11 @@ impl<'a> Interp<'a> {
                         next = Some((Rc::clone(&arm.body), env.clone()));
                         break;
                     }
-                    Node::If { then_branch, else_branch, .. } => {
+                    Node::If {
+                        then_branch,
+                        else_branch,
+                        ..
+                    } => {
                         let cond = self
                             .pop_bool()
                             .map_err(|e| Error::runtime(format!("{} (in guard)", e.msg)))?;
@@ -326,7 +330,12 @@ impl<'a> Interp<'a> {
                         next = Some((Rc::clone(branch), env.clone()));
                         break;
                     }
-                    Node::Let { names, body, line, col } => {
+                    Node::Let {
+                        names,
+                        body,
+                        line,
+                        col,
+                    } => {
                         let n = names.len();
                         if self.stack.len() < n {
                             return Err(Error::new("stack underflow (in `let`)", *line, *col));

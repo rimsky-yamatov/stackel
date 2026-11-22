@@ -334,7 +334,9 @@ pub fn run(input: &mut dyn BufRead, out: &mut dyn Write) {
             Ok(0) | Err(_) => break,
             Ok(_) => {}
         }
-        let line = line.trim_end_matches(|c| c == '\n' || c == '\r').to_string();
+        let line = line
+            .trim_end_matches(|c| c == '\n' || c == '\r')
+            .to_string();
 
         if block.is_some() {
             if line.trim() == ":}" {

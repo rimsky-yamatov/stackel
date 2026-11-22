@@ -539,7 +539,9 @@ mod tests {
             vec!["IO".to_string()]
         );
         assert_eq!(sig("-- ! IO IO").unwrap().effects, vec!["IO".to_string()]);
-        assert!(sig("-- ! Net").unwrap_err().contains("unknown effect `Net`"));
+        assert!(sig("-- ! Net")
+            .unwrap_err()
+            .contains("unknown effect `Net`"));
     }
 
     #[test]

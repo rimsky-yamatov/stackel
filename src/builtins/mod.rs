@@ -75,7 +75,11 @@ mod tests {
     #[test]
     fn every_signature_belongs_to_a_builtin() {
         for name in signatures().keys() {
-            assert!(is_builtin(name), "`{}` has a signature but is not a builtin", name);
+            assert!(
+                is_builtin(name),
+                "`{}` has a signature but is not a builtin",
+                name
+            );
         }
     }
 }

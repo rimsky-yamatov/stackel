@@ -7,7 +7,9 @@ use crate::error::Result;
 use crate::eval::Interp;
 use crate::value::Value;
 
-pub const WORDS: &[&str] = &["dup", "drop", "swap", "over", "rot", "apply", "true", "false"];
+pub const WORDS: &[&str] = &[
+    "dup", "drop", "swap", "over", "rot", "apply", "true", "false",
+];
 
 pub fn call(vm: &mut Interp, name: &str) -> Result<bool> {
     match name {

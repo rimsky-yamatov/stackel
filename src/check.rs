@@ -162,11 +162,7 @@ impl<'p> Checker<'p> {
                     ));
                 }
                 let fields = parse_fields(&c.fields, &t.params, &adts).map_err(|m| {
-                    Error::new(
-                        format!("{} (in constructor `{}`)", m, c.name),
-                        c.line,
-                        1,
-                    )
+                    Error::new(format!("{} (in constructor `{}`)", m, c.name), c.line, 1)
                 })?;
                 let args: Vec<Ty> = (0..t.params.len()).map(Ty::Param).collect();
                 let scheme = Scheme {
@@ -200,11 +196,8 @@ impl<'p> Checker<'p> {
             })?;
             declared.insert(sig.name.clone(), scheme);
         }
-        let defs: HashMap<&'p str, &'p Def> = program
-            .defs
-            .iter()
-            .map(|d| (d.name.as_str(), d))
-            .collect();
+        let defs: HashMap<&'p str, &'p Def> =
+            program.defs.iter().map(|d| (d.name.as_str(), d)).collect();
         Ok(Checker {
             infer: Infer::new(),
             defs,
@@ -262,11 +255,7 @@ impl<'p> Checker<'p> {
         names.sort();
         for name in names {
             let origin = &program.origins[name];
-            let scheme = match self
-                .declared
-                .get(name)
-                .or_else(|| self.inferred.get(name))
-            {
+            let scheme = match self.declared.get(name).or_else(|| self.inferred.get(name)) {
                 Some(s) => s,
                 None => continue,
             };
@@ -303,7 +292,11 @@ impl<'p> Checker<'p> {
             .map(|n| self.infer.fresh_rigid(n))
             .collect();
         let ins: Vec<Ty> = scheme.ins.iter().map(|t| subst_params(t, &rigid)).collect();
-        let outs: Vec<Ty> = scheme.outs.iter().map(|t| subst_params(t, &rigid)).collect();
+        let outs: Vec<Ty> = scheme
+            .outs
+            .iter()
+            .map(|t| subst_params(t, &rigid))
+            .collect();
         let pos: Pos = (def.line, 1);
 
         let mut st = State {
@@ -380,7 +373,9 @@ impl<'p> Checker<'p> {
         self.in_progress.remove(name);
         result?;
         let effects: Vec<String> = st.effects.keys().cloned().collect();
-        let scheme = self.infer.generalize_with_effects(&st.ins, &st.outs, &effects);
+        let scheme = self
+            .infer
+            .generalize_with_effects(&st.ins, &st.outs, &effects);
         self.inferred.insert(name.to_string(), scheme);
         Ok(())
     }

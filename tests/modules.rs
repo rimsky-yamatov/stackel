@@ -105,7 +105,11 @@ fn unknown_names_are_rejected() {
         .with("main.stk", "use util (nothing)\n\nmain = 1 drop\n")
         .with("util.stk", "pub one :: -- Int\npub one = 1\n");
     let e = err(&fs, "main.stk");
-    assert!(e.contains("module `util` has no public name `nothing`"), "{}", e);
+    assert!(
+        e.contains("module `util` has no public name `nothing`"),
+        "{}",
+        e
+    );
 }
 
 #[test]
@@ -122,7 +126,11 @@ fn import_cycles_are_rejected() {
         .with("a.stk", "use b\n\npub x :: -- Int\npub x = 1\n")
         .with("b.stk", "use a\n\npub y :: -- Int\npub y = 2\n");
     let e = err(&fs, "main.stk");
-    assert!(e.contains("circular import: a.stk -> b.stk -> a.stk"), "{}", e);
+    assert!(
+        e.contains("circular import: a.stk -> b.stk -> a.stk"),
+        "{}",
+        e
+    );
 }
 
 #[test]
@@ -131,7 +139,11 @@ fn public_words_need_signatures() {
         .with("main.stk", "use util\n\nmain = 1 drop\n")
         .with("util.stk", "pub f = 1\n");
     let e = err(&fs, "main.stk");
-    assert!(e.contains("public word `f` needs a type signature"), "{}", e);
+    assert!(
+        e.contains("public word `f` needs a type signature"),
+        "{}",
+        e
+    );
     assert!(e.contains("util.stk"), "{}", e);
 }
 
@@ -266,8 +278,14 @@ fn qualified_type_and_constructor_names() {
 #[test]
 fn types_of_different_modules_are_different_types() {
     let fs = MemFs::new()
-        .with("a.stk", "pub type T = MkA\n\npub mkA :: -- T\npub mkA = MkA\n")
-        .with("b.stk", "pub type T = MkB\n\npub mkB :: -- T\npub mkB = MkB\n")
+        .with(
+            "a.stk",
+            "pub type T = MkA\n\npub mkA :: -- T\npub mkA = MkA\n",
+        )
+        .with(
+            "b.stk",
+            "pub type T = MkB\n\npub mkB :: -- T\npub mkB = MkB\n",
+        )
         .with(
             "main.stk",
             "use a\nuse b\n\ntakesA :: a.T --\ntakesA = drop\n\nmain = mkB takesA\n",
@@ -375,8 +393,16 @@ fn shouting_lib() -> String {
 fn a_dependency_may_not_exceed_its_effect_ceiling() {
     let fs = app_with(&shouting_lib(), ", allow = []");
     let e = err(&fs, "app");
-    assert!(e.contains("the package `mathx` may perform no effects"), "{}", e);
-    assert!(e.contains("`mathx.shout` performs the `IO` effect"), "{}", e);
+    assert!(
+        e.contains("the package `mathx` may perform no effects"),
+        "{}",
+        e
+    );
+    assert!(
+        e.contains("`mathx.shout` performs the `IO` effect"),
+        "{}",
+        e
+    );
     assert!(e.contains("mathx/src/lib.stk"), "{}", e);
 }
 
@@ -419,14 +445,21 @@ fn a_ceiling_also_catches_effects_that_come_from_calls() {
             "pub shout :: String -- ! IO\npub shout = print\n",
         );
     let e = err(&fs, "app");
-    assert!(e.contains("the package `mathx` may perform no effects"), "{}", e);
+    assert!(
+        e.contains("the package `mathx` may perform no effects"),
+        "{}",
+        e
+    );
     assert!(e.contains("`mathx.loud` performs the `IO` effect"), "{}", e);
 }
 
 #[test]
 fn modules_of_a_package_import_each_other() {
     let fs = MemFs::new()
-        .with("app/stackel.toml", "[package]\nname = \"app\"\n\n[deps]\nmathx = { path = \"../mathx\" }\n")
+        .with(
+            "app/stackel.toml",
+            "[package]\nname = \"app\"\n\n[deps]\nmathx = { path = \"../mathx\" }\n",
+        )
         .with(
             "app/src/main.stk",
             "use mathx (quad)\n\nmain :: -- ! IO\nmain = 5 quad show print\n",
@@ -446,7 +479,10 @@ fn modules_of_a_package_import_each_other() {
 #[test]
 fn dependency_modules_are_reached_through_the_package_name() {
     let fs = MemFs::new()
-        .with("app/stackel.toml", "[package]\nname = \"app\"\n\n[deps]\nmathx = { path = \"../mathx\" }\n")
+        .with(
+            "app/stackel.toml",
+            "[package]\nname = \"app\"\n\n[deps]\nmathx = { path = \"../mathx\" }\n",
+        )
         .with(
             "app/src/main.stk",
             "use mathx.extra (five)\n\nmain :: -- ! IO\nmain = five show print\n",
@@ -540,7 +576,11 @@ fn ceilings_distinguish_files_from_the_console() {
         MATHX
     );
     let e = err(&app_with(&lib, ", allow = [\"IO\"]"), "app");
-    assert!(e.contains("the package `mathx` may perform only IO"), "{}", e);
+    assert!(
+        e.contains("the package `mathx` may perform only IO"),
+        "{}",
+        e
+    );
     assert!(e.contains("`mathx.load` performs the `Fs` effect"), "{}", e);
     assert_eq!(ok(&app_with(&lib, ", allow = [\"Fs\"]"), "app"), "27\n");
 }

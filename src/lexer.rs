@@ -107,7 +107,11 @@ pub fn lex(src: &str) -> Result<Vec<Token>> {
             _ => None,
         };
         if let Some(t) = simple {
-            toks.push(Token { tok: t, line: sl, col: sc });
+            toks.push(Token {
+                tok: t,
+                line: sl,
+                col: sc,
+            });
             i += 1;
             col += 1;
             continue;
@@ -155,7 +159,11 @@ pub fn lex(src: &str) -> Result<Vec<Token>> {
                     _ => s.push(d),
                 }
             }
-            toks.push(Token { tok: Tok::Str(s), line: sl, col: sc });
+            toks.push(Token {
+                tok: Tok::Str(s),
+                line: sl,
+                col: sc,
+            });
             continue;
         }
 
@@ -166,7 +174,11 @@ pub fn lex(src: &str) -> Result<Vec<Token>> {
         }
         let w: String = chars[start..i].iter().collect();
         match classify(&w) {
-            Ok(t) => toks.push(Token { tok: t, line: sl, col: sc }),
+            Ok(t) => toks.push(Token {
+                tok: t,
+                line: sl,
+                col: sc,
+            }),
             Err(m) => return Err(Error::new(m, sl, sc + 1)),
         }
     }
@@ -234,7 +246,10 @@ mod tests {
 
     #[test]
     fn string_literals_and_escapes() {
-        assert_eq!(toks("\"a\\nb\\\"c\""), vec![Tok::Str("a\nb\"c".to_string())]);
+        assert_eq!(
+            toks("\"a\\nb\\\"c\""),
+            vec![Tok::Str("a\nb\"c".to_string())]
+        );
     }
 
     #[test]

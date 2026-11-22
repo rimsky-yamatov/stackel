@@ -57,8 +57,14 @@ fn comparison_and_logic() {
 #[test]
 fn stack_words() {
     assert_eq!(ok("main = 1 2 swap show print show print"), "1\n2\n");
-    assert_eq!(ok("main = 1 2 over show print show print show print"), "1\n2\n1\n");
-    assert_eq!(ok("main = 1 2 3 rot show print show print show print"), "1\n3\n2\n");
+    assert_eq!(
+        ok("main = 1 2 over show print show print show print"),
+        "1\n2\n1\n"
+    );
+    assert_eq!(
+        ok("main = 1 2 3 rot show print show print show print"),
+        "1\n3\n2\n"
+    );
     assert_eq!(ok("main = 5 dup add show print"), "10\n");
 }
 

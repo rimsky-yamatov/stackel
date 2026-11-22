@@ -44,7 +44,10 @@ fn a_program_without_tests_passes_trivially() {
     let loaded = load_source("main = 1 drop\n").unwrap();
     let mut out: Vec<u8> = Vec::new();
     assert_eq!(loaded.test(&mut out).unwrap(), (0, 0));
-    assert_eq!(String::from_utf8(out).unwrap(), "0 tests: 0 passed, 0 failed\n");
+    assert_eq!(
+        String::from_utf8(out).unwrap(),
+        "0 tests: 0 passed, 0 failed\n"
+    );
 }
 
 #[test]

@@ -147,7 +147,8 @@ fn ok_with_args(src: &str, args: &[&str]) -> String {
 
 #[test]
 fn std_text() {
-    let src = "use std.text (split, join, lines, starts_with, ends_with, contains, to_int, to_float)\n\
+    let src =
+        "use std.text (split, join, lines, starts_with, ends_with, contains, to_int, to_float)\n\
                use std.list (size)\n\
                use std.option (unwrap_or)\n\
                \n\
@@ -331,6 +332,8 @@ fn capture_returns_what_a_quotation_prints() {
 
 #[test]
 fn capture_passes_the_other_effects_through() {
-    let e = err("main :: -- ! IO\nmain = [ \"x\" print 1 \"x\" file_read drop drop ] capture drop drop\n");
+    let e = err(
+        "main :: -- ! IO\nmain = [ \"x\" print 1 \"x\" file_read drop drop ] capture drop drop\n",
+    );
     assert!(e.contains("this performs the `Fs` effect"), "{}", e);
 }

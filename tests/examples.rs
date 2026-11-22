@@ -89,7 +89,11 @@ fn every_example_has_a_golden_file() {
         .filter(|(name, _)| read_opt(name, "expected").is_none())
         .map(|(_, path)| path)
         .collect();
-    assert!(missing.is_empty(), "examples without a .expected file: {:?}", missing);
+    assert!(
+        missing.is_empty(),
+        "examples without a .expected file: {:?}",
+        missing
+    );
 }
 
 #[test]

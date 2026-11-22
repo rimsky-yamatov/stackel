@@ -92,7 +92,9 @@ fn err_at(t: &Token, msg: &str) -> Error {
 
 fn expect_word(cur: &mut Cursor, after: &Token, what: &str) -> Result<String> {
     match cur.bump() {
-        Some(Token { tok: Tok::Word(w), .. }) => Ok(w.clone()),
+        Some(Token {
+            tok: Tok::Word(w), ..
+        }) => Ok(w.clone()),
         Some(t) => Err(err_at(t, &format!("expected {}", what))),
         None => Err(err_at(after, &format!("expected {}", what))),
     }
@@ -100,7 +102,9 @@ fn expect_word(cur: &mut Cursor, after: &Token, what: &str) -> Result<String> {
 
 fn expect_keyword(cur: &mut Cursor, after: &Token, kw: &str) -> Result<()> {
     match cur.bump() {
-        Some(Token { tok: Tok::Word(w), .. }) if w == kw => Ok(()),
+        Some(Token {
+            tok: Tok::Word(w), ..
+        }) if w == kw => Ok(()),
         Some(t) => Err(err_at(t, &format!("expected `{}`", kw))),
         None => Err(err_at(after, &format!("expected `{}`", kw))),
     }
@@ -158,11 +162,16 @@ fn parse_use(cur: &mut Cursor, head: &Token, program: &mut Program) -> Result<()
     let path = expect_word(cur, head, "a module path after `use`")?;
 
     let mut source = None;
-    if let Some(Token { tok: Tok::Word(w), .. }) = cur.peek() {
+    if let Some(Token {
+        tok: Tok::Word(w), ..
+    }) = cur.peek()
+    {
         if w == "from" {
             cur.bump();
             match cur.bump() {
-                Some(Token { tok: Tok::Str(s), .. }) => source = Some(s.clone()),
+                Some(Token {
+                    tok: Tok::Str(s), ..
+                }) => source = Some(s.clone()),
                 Some(t) => return Err(err_at(t, "expected a string after `from`")),
                 None => return Err(err_at(head, "expected a string after `from`")),
             }
@@ -170,17 +179,26 @@ fn parse_use(cur: &mut Cursor, head: &Token, program: &mut Program) -> Result<()
     }
 
     let mut names = Vec::new();
-    if let Some(Token { tok: Tok::LParen, .. }) = cur.peek() {
+    if let Some(Token {
+        tok: Tok::LParen, ..
+    }) = cur.peek()
+    {
         cur.bump();
         loop {
             match cur.bump() {
-                Some(Token { tok: Tok::Word(w), .. }) => names.push(w.clone()),
+                Some(Token {
+                    tok: Tok::Word(w), ..
+                }) => names.push(w.clone()),
                 Some(t) => return Err(err_at(t, "expected a name in the import list")),
                 None => return Err(err_at(head, "unterminated import list")),
             }
             match cur.bump() {
-                Some(Token { tok: Tok::Comma, .. }) => continue,
-                Some(Token { tok: Tok::RParen, .. }) => break,
+                Some(Token {
+                    tok: Tok::Comma, ..
+                }) => continue,
+                Some(Token {
+                    tok: Tok::RParen, ..
+                }) => break,
                 Some(t) => return Err(err_at(t, "expected `,` or `)`")),
                 None => return Err(err_at(head, "unterminated import list")),
             }
@@ -200,13 +218,20 @@ fn parse_use(cur: &mut Cursor, head: &Token, program: &mut Program) -> Result<()
 fn parse_type(cur: &mut Cursor, head: &Token, public: bool, program: &mut Program) -> Result<()> {
     let name = expect_word(cur, head, "a type name after `type`")?;
     if !is_upper(&name) {
-        return Err(err_at(head, "type names must start with an uppercase letter"));
+        return Err(err_at(
+            head,
+            "type names must start with an uppercase letter",
+        ));
     }
     let mut params = Vec::new();
     loop {
         match cur.bump() {
-            Some(Token { tok: Tok::Equals, .. }) => break,
-            Some(Token { tok: Tok::Word(w), .. }) if is_lower(w) => params.push(w.clone()),
+            Some(Token {
+                tok: Tok::Equals, ..
+            }) => break,
+            Some(Token {
+                tok: Tok::Word(w), ..
+            }) if is_lower(w) => params.push(w.clone()),
             Some(t) => {
                 return Err(err_at(
                     t,
@@ -223,7 +248,11 @@ fn parse_type(cur: &mut Cursor, head: &Token, public: bool, program: &mut Progra
     let mut ctors = Vec::new();
     loop {
         let (ctor, line) = match cur.bump() {
-            Some(Token { tok: Tok::Word(w), line, .. }) if is_upper(w) => (w.clone(), *line),
+            Some(Token {
+                tok: Tok::Word(w),
+                line,
+                ..
+            }) if is_upper(w) => (w.clone(), *line),
             Some(t) => {
                 return Err(err_at(
                     t,
@@ -272,7 +301,10 @@ fn parse_def_or_sig(
         return Err(err_at(head, "`match` is a keyword and cannot be defined"));
     }
     match cur.bump() {
-        Some(Token { tok: Tok::ColonColon, .. }) => {
+        Some(Token {
+            tok: Tok::ColonColon,
+            ..
+        }) => {
             let mut tokens = Vec::new();
             while let Some(t) = cur.bump() {
                 tokens.push(t.tok.clone());
@@ -288,7 +320,9 @@ fn parse_def_or_sig(
             });
             Ok(())
         }
-        Some(Token { tok: Tok::Equals, .. }) => {
+        Some(Token {
+            tok: Tok::Equals, ..
+        }) => {
             let body = parse_body(cur, true)?;
             if let Some(t) = cur.peek() {
                 return Err(err_at(t, "unexpected token in definition body"));
@@ -353,7 +387,9 @@ fn parse_body(cur: &mut Cursor, allow_guard: bool) -> Result<Vec<Node>> {
                 cur.bump();
                 let inner = parse_body(cur, true)?;
                 match cur.bump() {
-                    Some(Token { tok: Tok::RBracket, .. }) => {}
+                    Some(Token {
+                        tok: Tok::RBracket, ..
+                    }) => {}
                     Some(u) => return Err(err_at(u, "expected `]`")),
                     None => return Err(err_at(t, "unclosed `[`")),
                 }
@@ -363,8 +399,12 @@ fn parse_body(cur: &mut Cursor, allow_guard: bool) -> Result<Vec<Node>> {
         }
     }
     if allow_guard {
-        if let (Some(Token { tok: Tok::Bar, .. }), Some(Token { tok: Tok::Word(w), .. })) =
-            (cur.peek(), cur.peek2())
+        if let (
+            Some(Token { tok: Tok::Bar, .. }),
+            Some(Token {
+                tok: Tok::Word(w), ..
+            }),
+        ) = (cur.peek(), cur.peek2())
         {
             if w == "then" {
                 let guard = parse_guard(cur)?;
@@ -423,8 +463,12 @@ fn parse_match(cur: &mut Cursor) -> Result<Node> {
     let mut arms = Vec::new();
     loop {
         match (cur.peek(), cur.peek2()) {
-            (Some(Token { tok: Tok::Bar, .. }), Some(Token { tok: Tok::Word(w), .. }))
-                if is_ctor_ref(w) => {}
+            (
+                Some(Token { tok: Tok::Bar, .. }),
+                Some(Token {
+                    tok: Tok::Word(w), ..
+                }),
+            ) if is_ctor_ref(w) => {}
             _ => break,
         }
         let bar = cur.bump().expect("peeked");
@@ -461,12 +505,7 @@ fn parse_guard(cur: &mut Cursor) -> Result<Node> {
     let bar2 = match cur.bump() {
         Some(t) if t.tok == Tok::Bar => t,
         Some(t) => return Err(err_at(t, "expected `| else` after the `then` branch")),
-        None => {
-            return Err(err_at(
-                bar,
-                "missing `| else` branch (`else` is required)",
-            ))
-        }
+        None => return Err(err_at(bar, "missing `| else` branch (`else` is required)")),
     };
     expect_keyword(cur, bar2, "else")?;
     let else_body = parse_body(cur, true)?;
@@ -519,7 +558,11 @@ mod tests {
         let body = &p.defs[0].body;
         assert_eq!(body.len(), 4);
         match &body[3] {
-            Node::If { then_branch, else_branch, .. } => {
+            Node::If {
+                then_branch,
+                else_branch,
+                ..
+            } => {
                 assert_eq!(then_branch.len(), 1);
                 assert_eq!(else_branch.len(), 0);
             }
@@ -533,7 +576,11 @@ mod tests {
         let p = parse_src(src).unwrap();
         match p.defs[0].body.last().unwrap() {
             Node::If { else_branch, .. } => match else_branch.last().unwrap() {
-                Node::If { then_branch, else_branch, .. } => {
+                Node::If {
+                    then_branch,
+                    else_branch,
+                    ..
+                } => {
                     assert_eq!(then_branch.as_ref(), &vec![Node::Int(2)]);
                     assert_eq!(else_branch.as_ref(), &vec![Node::Int(3)]);
                 }
@@ -554,11 +601,15 @@ mod tests {
 
     #[test]
     fn module_and_use() {
-        let p = parse_src("module m\nuse std.io (print, show)\nuse json from \"pkg:json@^1\"").unwrap();
+        let p =
+            parse_src("module m\nuse std.io (print, show)\nuse json from \"pkg:json@^1\"").unwrap();
         assert_eq!(p.module.as_deref(), Some("m"));
         assert_eq!(p.uses.len(), 2);
         assert_eq!(p.uses[0].path, "std.io");
-        assert_eq!(p.uses[0].names, vec!["print".to_string(), "show".to_string()]);
+        assert_eq!(
+            p.uses[0].names,
+            vec!["print".to_string(), "show".to_string()]
+        );
         assert_eq!(p.uses[1].source.as_deref(), Some("pkg:json@^1"));
     }
 

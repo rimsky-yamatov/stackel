@@ -298,12 +298,10 @@ impl<'f> Loader<'f> {
             let fail = |msg: String| Error::new(msg, spec.line.max(1), 1).in_file(mpath.clone());
             let rel = match &spec.path {
                 Some(p) => p.clone(),
-                None => {
-                    return Err(fail(format!(
-                        "dependency `{}` needs a `path` (registry dependencies are not supported yet)",
-                        name
-                    )))
-                }
+                None => return Err(fail(format!(
+                    "dependency `{}` needs a `path` (registry dependencies are not supported yet)",
+                    name
+                ))),
             };
             if let Some(allow) = &spec.allow {
                 for e in allow {
@@ -358,7 +356,9 @@ impl<'f> Loader<'f> {
                 (None, None) => None,
                 (Some(a), None) => Some(a),
                 (None, Some(b)) => Some(b),
-                (Some(a), Some(b)) => Some(a.intersection(&b).cloned().collect::<BTreeSet<String>>()),
+                (Some(a), Some(b)) => {
+                    Some(a.intersection(&b).cloned().collect::<BTreeSet<String>>())
+                }
             };
             self.packages[i].allow = merged;
             return Ok(i);
@@ -381,10 +381,7 @@ impl<'f> Loader<'f> {
             )));
         }
         if self.packages.iter().any(|p| p.name == name) {
-            return Err(fail(format!(
-                "two different packages are named `{}`",
-                name
-            )));
+            return Err(fail(format!("two different packages are named `{}`", name)));
         }
         self.packages.push(Package {
             name: name.to_string(),
@@ -717,9 +714,7 @@ impl<'f> Loader<'f> {
                 ));
             }
         }
-        layers
-            .explicit
-            .insert(name.to_string(), global.to_string());
+        layers.explicit.insert(name.to_string(), global.to_string());
         Ok(())
     }
 
@@ -802,7 +797,11 @@ impl<'f> Loader<'f> {
     }
 
     /// Rewrites the types, signatures and words of module `m` to global names.
-    fn rewrite_module(&self, m: usize, scope: &Scope) -> Result<(Vec<TypeDef>, Vec<Sig>, Vec<Def>)> {
+    fn rewrite_module(
+        &self,
+        m: usize,
+        scope: &Scope,
+    ) -> Result<(Vec<TypeDef>, Vec<Sig>, Vec<Def>)> {
         let module = &self.modules[m];
         let off = module.file << FILE_SHIFT;
         let key = &module.key;
@@ -1086,7 +1085,11 @@ mod tests {
     fn localize_decodes_the_file_and_the_line() {
         let files = vec!["main.stk".to_string(), "util.stk".to_string()];
         let sources = vec!["a\nb\n".to_string(), "1\n2\n3\n4\nfive six\n".to_string()];
-        let e = localize(&files, &sources, Error::new("boom", 5 + (1 << FILE_SHIFT), 3));
+        let e = localize(
+            &files,
+            &sources,
+            Error::new("boom", 5 + (1 << FILE_SHIFT), 3),
+        );
         assert_eq!(e.snippet.as_deref(), Some("  |\n5 | five six\n  |   ^"));
         assert_eq!((e.line, e.col), (5, 3));
         assert_eq!(e.file.as_deref(), Some("util.stk"));

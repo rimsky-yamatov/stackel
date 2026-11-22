@@ -21,7 +21,10 @@ fn words_run_on_the_stack_of_the_session() {
 
 #[test]
 fn definitions_are_kept() {
-    assert_eq!(session(&["double = dup add", "5 double"]), "ok\nstack: 10\n");
+    assert_eq!(
+        session(&["double = dup add", "5 double"]),
+        "ok\nstack: 10\n"
+    );
 }
 
 #[test]
@@ -72,7 +75,12 @@ fn data_values_are_shown_with_their_constructors() {
 #[test]
 fn the_type_command_shows_types() {
     assert_eq!(
-        session(&[":type 1", ":type dup add", "double = dup add", ":type double"]),
+        session(&[
+            ":type 1",
+            ":type dup add",
+            "double = dup add",
+            ":type double"
+        ]),
         "1 :: -- Int\ndup add :: a -- a\nok\ndouble :: a -- a\n"
     );
 }

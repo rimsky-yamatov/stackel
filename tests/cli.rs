@@ -26,7 +26,9 @@ fn help_flag_prints_the_usage_and_succeeds() {
     for flag in ["--help", "-h"] {
         let out = stackel(&[flag]);
         assert!(out.status.success());
-        assert!(String::from_utf8(out.stdout).unwrap().contains("usage: stackel run"));
+        assert!(String::from_utf8(out.stdout)
+            .unwrap()
+            .contains("usage: stackel run"));
     }
 }
 
@@ -34,5 +36,7 @@ fn help_flag_prints_the_usage_and_succeeds() {
 fn an_unknown_command_is_a_usage_error() {
     let out = stackel(&["nonsense"]);
     assert_eq!(out.status.code(), Some(2));
-    assert!(String::from_utf8(out.stderr).unwrap().contains("usage: stackel"));
+    assert!(String::from_utf8(out.stderr)
+        .unwrap()
+        .contains("usage: stackel"));
 }

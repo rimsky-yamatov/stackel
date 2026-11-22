@@ -48,7 +48,8 @@ impl Infer {
     }
 
     fn effect_var_id(name: &str) -> Option<usize> {
-        name.strip_prefix("?e").and_then(|n| n.parse::<usize>().ok())
+        name.strip_prefix("?e")
+            .and_then(|n| n.parse::<usize>().ok())
     }
 
     /// Expands the bound effect variables in `effects`. The result is the concrete names
@@ -164,9 +165,7 @@ impl Infer {
                 outs.iter().map(|x| self.resolve(x)).collect(),
                 self.flatten_effects(&effects),
             ),
-            Ty::Con(name, args) => {
-                Ty::Con(name, args.iter().map(|x| self.resolve(x)).collect())
-            }
+            Ty::Con(name, args) => Ty::Con(name, args.iter().map(|x| self.resolve(x)).collect()),
             other => other,
         }
     }
@@ -231,13 +230,18 @@ impl Infer {
             }
             (Ty::Var(x), _) => self.bind(*x, f.clone(), true),
             (_, Ty::Var(y)) => self.bind(*y, e.clone(), false),
-            (Ty::Int, Ty::Int) | (Ty::Float, Ty::Float) | (Ty::Str, Ty::Str) | (Ty::Bool, Ty::Bool) => {
-                Ok(())
-            }
+            (Ty::Int, Ty::Int)
+            | (Ty::Float, Ty::Float)
+            | (Ty::Str, Ty::Str)
+            | (Ty::Bool, Ty::Bool) => Ok(()),
             (Ty::Rigid(a), Ty::Rigid(b)) if a == b => Ok(()),
             (Ty::Quote(i1, o1, f1), Ty::Quote(i2, o2, f2)) => {
                 if i1.len() != i2.len() || o1.len() != o2.len() {
-                    return Err(format!("expected {}, found {}", self.show(&e), self.show(&f)));
+                    return Err(format!(
+                        "expected {}, found {}",
+                        self.show(&e),
+                        self.show(&f)
+                    ));
                 }
                 for (a, b) in i1.iter().zip(i2.iter()) {
                     self.unify(a, b)?;
@@ -246,7 +250,11 @@ impl Infer {
                     self.unify(a, b)?;
                 }
                 if self.unify_effects(f1, f2).is_err() {
-                    return Err(format!("expected {}, found {}", self.show(&e), self.show(&f)));
+                    return Err(format!(
+                        "expected {}, found {}",
+                        self.show(&e),
+                        self.show(&f)
+                    ));
                 }
                 Ok(())
             }
@@ -256,7 +264,11 @@ impl Infer {
                 }
                 Ok(())
             }
-            _ => Err(format!("expected {}, found {}", self.show(&e), self.show(&f))),
+            _ => Err(format!(
+                "expected {}, found {}",
+                self.show(&e),
+                self.show(&f)
+            )),
         }
     }
 

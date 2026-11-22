@@ -362,13 +362,7 @@ pub fn parse_manifest(text: &str) -> Result<Manifest> {
         if let Some(rest) = line.strip_prefix('[') {
             let name = match rest.strip_suffix(']') {
                 Some(n) => n.trim(),
-                None => {
-                    return Err(Error::new(
-                        "a section header must end with `]`",
-                        lineno,
-                        1,
-                    ))
-                }
+                None => return Err(Error::new("a section header must end with `]`", lineno, 1)),
             };
             if name == "package" {
                 if has_package {
@@ -530,14 +524,20 @@ mod tests {
     fn dependencies_are_checked() {
         let head = "[package]\nname = \"a\"\n[deps]\n";
         assert!(err(&format!("{}std = {{ path = \"x\" }}\n", head)).contains("reserved"));
-        assert!(err(&format!("{}x = {{ path = \"p\" }}\nx = \"1\"\n", head))
-            .contains("more than once"));
-        assert!(err(&format!("{}x = \"1\"\n[deps.x]\npath = \"p\"\n", head))
-            .contains("more than once"));
+        assert!(
+            err(&format!("{}x = {{ path = \"p\" }}\nx = \"1\"\n", head)).contains("more than once")
+        );
+        assert!(
+            err(&format!("{}x = \"1\"\n[deps.x]\npath = \"p\"\n", head)).contains("more than once")
+        );
         assert!(err(&format!("{}x = [\"1\"]\n", head)).contains("version string or a table"));
-        assert!(err(&format!("{}x = {{ allow = \"IO\" }}\n", head)).contains("list of effect names"));
+        assert!(
+            err(&format!("{}x = {{ allow = \"IO\" }}\n", head)).contains("list of effect names")
+        );
         assert!(err(&format!("{}x = {{ colour = \"red\" }}\n", head)).contains("unknown key"));
-        assert!(err(&format!("{}x = {{ path = \"a\", path = \"b\" }}\n", head))
-            .contains("duplicate key"));
+        assert!(
+            err(&format!("{}x = {{ path = \"a\", path = \"b\" }}\n", head))
+                .contains("duplicate key")
+        );
     }
 }

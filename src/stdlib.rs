@@ -12,7 +12,9 @@
 pub const MODULES: &[(&str, &[&str])] = &[
     (
         "std.stack",
-        &["dup", "drop", "swap", "over", "rot", "apply", "true", "false"],
+        &[
+            "dup", "drop", "swap", "over", "rot", "apply", "true", "false",
+        ],
     ),
     ("std.arith", &["add", "sub", "mul", "div", "mod", "neg"]),
     ("std.compare", &["lt", "gt", "le", "ge", "eq", "ne"]),
@@ -88,13 +90,23 @@ mod tests {
     #[test]
     fn a_module_is_either_a_name_group_or_embedded() {
         for (name, _) in MODULES {
-            assert!(source(name).is_none(), "{} is both a name group and embedded", name);
+            assert!(
+                source(name).is_none(),
+                "{} is both a name group and embedded",
+                name
+            );
         }
     }
 
     #[test]
     fn embedded_modules_carry_their_own_name() {
-        for name in ["std.option", "std.result", "std.list", "std.text", "std.sys"] {
+        for name in [
+            "std.option",
+            "std.result",
+            "std.list",
+            "std.text",
+            "std.sys",
+        ] {
             let text = source(name).expect("the module is embedded");
             assert!(text.contains(&format!("module {}", name)), "{}", name);
         }

@@ -12,7 +12,11 @@ pub enum Node {
     Float(f64),
     Str(String),
     /// A call to a word. `col` is 1-based.
-    Word { name: String, line: usize, col: usize },
+    Word {
+        name: String,
+        line: usize,
+        col: usize,
+    },
     /// A quotation `[ ... ]`.
     Quote(Rc<Vec<Node>>),
     /// `match | Ctor ... | Ctor ...`: pops a data value and runs the arm of its constructor,

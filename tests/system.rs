@@ -121,6 +121,8 @@ fn files_and_the_environment_are_effects() {
 
 #[test]
 fn the_new_words_are_listed_in_their_modules() {
-    ok("use std.string (substring, parse_int)\nuse std.io (eprint, exit)\n\
-        use std.fs (file_read)\nuse std.env (arg)\n\nmain = 1 drop\n");
+    ok(
+        "use std.string (substring, parse_int)\nuse std.io (eprint, exit)\n\
+        use std.fs (file_read)\nuse std.env (arg)\n\nmain = 1 drop\n",
+    );
 }

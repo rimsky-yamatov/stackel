@@ -8,7 +8,10 @@ fn ok(src: &str) {
 
 fn err(src: &str) -> String {
     match stackel::check_source(src) {
-        Ok(()) => panic!("expected a type error, but the program was accepted:\n{}", src),
+        Ok(()) => panic!(
+            "expected a type error, but the program was accepted:\n{}",
+            src
+        ),
         Err(e) => e.to_string(),
     }
 }
@@ -90,28 +93,24 @@ fn guard_condition_must_be_bool() {
 
 #[test]
 fn guard_branches_must_have_the_same_type() {
-    let e = err(
-        "f :: Int -- Int\n\
+    let e = err("f :: Int -- Int\n\
          f = dup 0 lt\n\
          \x20 | then drop \"x\"\n\
          \x20 | else 1 add\n\
          \n\
          main :: -- ! IO\n\
-         main = 1 f show print\n",
-    );
+         main = 1 f show print\n");
     assert!(e.contains("branches do not match"), "{}", e);
 }
 
 #[test]
 fn guard_branches_must_leave_the_same_number_of_values() {
-    let e = err(
-        "f :: Int -- Int\n\
+    let e = err("f :: Int -- Int\n\
          f = dup 0 lt\n\
          \x20 | then 1\n\
          \x20 | else\n\
          \n\
-         main = 1 f show print\n",
-    );
+         main = 1 f show print\n");
     assert!(e.contains("the `then` branch has the type"), "{}", e);
 }
 
@@ -128,7 +127,11 @@ fn an_empty_branch_is_fine_when_the_effects_agree() {
 #[test]
 fn recursive_words_need_a_signature() {
     let e = err("loop = loop\nmain = loop");
-    assert!(e.contains("recursive word `loop` needs a type signature"), "{}", e);
+    assert!(
+        e.contains("recursive word `loop` needs a type signature"),
+        "{}",
+        e
+    );
 }
 
 #[test]
@@ -171,15 +174,18 @@ fn apply_needs_a_known_quotation_type() {
 #[test]
 fn quotation_types_must_match_exactly_for_now() {
     // Stack-polymorphic quotations need explicit row variables (a later milestone).
-    let e = err("apply2 :: Int [Int -- Int] -- Int\napply2 = apply\nmain = 1 [ ] apply2 show print");
+    let e =
+        err("apply2 :: Int [Int -- Int] -- Int\napply2 = apply\nmain = 1 [ ] apply2 show print");
     assert!(e.contains("type error in `apply2`"), "{}", e);
 }
 
 #[test]
 fn signature_errors() {
     assert!(err("f :: Foo -- Int\nf = 1\nmain = f drop").contains("unknown type `Foo`"));
-    assert!(err("f :: Int -- Int\nf :: Int -- Int\nf = 1\nmain = f drop")
-        .contains("duplicate type signature"));
+    assert!(
+        err("f :: Int -- Int\nf :: Int -- Int\nf = 1\nmain = f drop")
+            .contains("duplicate type signature")
+    );
     assert!(err("f :: Int Int\nf = 1\nmain = f drop").contains("needs `--`"));
 }
 
@@ -238,12 +244,10 @@ fn building_a_quotation_performs_nothing() {
 
 #[test]
 fn quotation_effects_must_match_the_expected_type() {
-    let e = err(
-        "run :: String [String --] --\n\
+    let e = err("run :: String [String --] --\n\
          run = apply\n\
          main :: -- ! IO\n\
-         main = \"x\" [ print ] run\n",
-    );
+         main = \"x\" [ print ] run\n");
     assert!(e.contains("found [String -- ! IO]"), "{}", e);
     ok("run :: String [String -- ! IO] -- ! IO\n\
         run = apply\n\
@@ -276,7 +280,9 @@ fn data_types_and_match_type_check() {
 
 #[test]
 fn constructors_are_polymorphic() {
-    ok(&with_option("main = None None drop drop 1 Some drop \"x\" Some drop"));
+    ok(&with_option(
+        "main = None None drop drop 1 Some drop \"x\" Some drop",
+    ));
 }
 
 #[test]
@@ -305,13 +311,21 @@ fn match_arms_must_be_unique() {
     let e = err(&with_option(
         "f :: (Option Int) -- Int\nf = match | Some | Some | None 0\nmain = 1 Some f drop",
     ));
-    assert!(e.contains("duplicate arm for the constructor `Some`"), "{}", e);
+    assert!(
+        e.contains("duplicate arm for the constructor `Some`"),
+        "{}",
+        e
+    );
 }
 
 #[test]
 fn match_arms_must_belong_to_one_type() {
     let e = err("type A = X | Y\ntype B = Z\nf = match | X | Z\nmain = X f");
-    assert!(e.contains("constructor `Z` belongs to type `B`, not `A`"), "{}", e);
+    assert!(
+        e.contains("constructor `Z` belongs to type `B`, not `A`"),
+        "{}",
+        e
+    );
 }
 
 #[test]
@@ -334,7 +348,9 @@ fn match_arms_must_have_the_same_type() {
 
 #[test]
 fn match_needs_a_value_of_the_matched_type() {
-    let e = err(&with_option("f :: Int -- Int\nf = match | None 0 | Some\nmain = 1 f drop"));
+    let e = err(&with_option(
+        "f :: Int -- Int\nf = match | None 0 | Some\nmain = 1 f drop",
+    ));
     assert!(e.contains("expected (Option a), found Int"), "{}", e);
 }
 
@@ -355,7 +371,11 @@ fn match_arms_can_perform_effects() {
 #[test]
 fn data_values_cannot_be_shown_or_compared() {
     let e = err("type Color = Red\nmain = Red show print");
-    assert!(e.contains("expected Int, Float, String or Bool, found Color"), "{}", e);
+    assert!(
+        e.contains("expected Int, Float, String or Bool, found Color"),
+        "{}",
+        e
+    );
     let e = err("type Color = Red\nmain = Red Red eq drop");
     assert!(e.contains("found Color"), "{}", e);
 }
@@ -365,11 +385,16 @@ fn data_declaration_errors() {
     assert!(err("type T = A Foo\nmain = A drop").contains("unknown type `Foo`"));
     assert!(err("type T = A b\nmain = 1 drop").contains("unknown type variable `b`"));
     assert!(err("type Int = A\nmain = 1 drop").contains("builtin type"));
-    assert!(err("type T = A\ntype T = B\nmain = 1 drop").contains("type `T` is defined more than once"));
+    assert!(
+        err("type T = A\ntype T = B\nmain = 1 drop").contains("type `T` is defined more than once")
+    );
     assert!(err("type T a a = A\nmain = 1 drop").contains("duplicate type parameter `a`"));
-    assert!(err("type Option a = None | Some a\ntype T = A Option\nmain = 1 drop")
-        .contains("takes 1 parameter(s)"));
-    assert!(err("type T = A\ntype U = A\nmain = 1 drop").contains("constructor `A` is defined more than once"));
+    assert!(
+        err("type Option a = None | Some a\ntype T = A Option\nmain = 1 drop")
+            .contains("takes 1 parameter(s)")
+    );
+    assert!(err("type T = A\ntype U = A\nmain = 1 drop")
+        .contains("constructor `A` is defined more than once"));
     assert!(err("type T = A\nA = 1\nmain = 1 drop").contains("same name as a constructor"));
 }
 
