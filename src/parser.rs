@@ -344,11 +344,7 @@ fn parse_def_or_sig(
 /// If `allow_guard` is set and a `|` follows, the guard is parsed and appended as the last node.
 fn parse_body(cur: &mut Cursor, allow_guard: bool) -> Result<Vec<Node>> {
     let mut nodes = Vec::new();
-    loop {
-        let t = match cur.peek() {
-            Some(t) => t,
-            None => break,
-        };
+    while let Some(t) = cur.peek() {
         match &t.tok {
             Tok::RBracket | Tok::Bar => break,
             Tok::Int(n) => {
