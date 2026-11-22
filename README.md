@@ -186,8 +186,98 @@ cargo run -- test examples/tests.stk      # test_ で始まる語をテストと
 echo "3 4 add 2 mul" | cargo run -- run examples/rpn.stk   # Stackel で書いた RPN 電卓(14)
 cargo run -- run                          # カレントディレクトリのパッケージを実行
 cargo run -- check examples/option.stk    # 実行せずに検査だけ
+cargo run -- --version                    # バージョンを表示
 cargo test
 ```
+
+## インストール
+
+### リリースから
+
+[Releases](../../releases) のページから、使っている環境のアーカイブをダウンロードして展開する(中に `stackel`、README、`examples/` が入っている)。
+
+| OS | アーキテクチャ |
+| --- | --- |
+| Linux(静的リンク、どのディストリビューションでも動く) | x86_64、aarch64、armv7(hard float)、i686 |
+| Linux(glibc) | riscv64、powerpc64le、s390x、loongarch64(実験的) |
+| macOS | Apple silicon、Intel |
+| Windows | x86_64、i686、arm64 |
+
+アーカイブと同じ場所にある `SHA256SUMS` で、ダウンロードしたファイルを検証できる。
+
+```
+sha256sum --check --ignore-missing SHA256SUMS
+```
+
+### ソースから
+
+Rust 1.75 以降が必要。
+
+```
+cargo install --path .
+stackel --version
+```
+
+## examples
+
+`examples/` のプログラムは、すべて `cargo test` が実行して、横にある期待出力(`NAME.expected`)と照らし合わせる。出力が変わる変更や、動かなくなる変更はテストで見つかる。
+
+| 分類 | プログラム |
+| --- | --- |
+| 最初の一歩 | `hello` `fact` `countdown`(末尾呼び出し) `guards` `twice` `stack_ops`(スタック語の一覧) |
+| 数と算術 | `fizzbuzz` `fib` `gcd` `power` `primes` `collatz` `hanoi` `ackermann` `even_odd`(相互再帰) `digits` `perfect` `isqrt` `binary`(進数変換) `calendar` `float` `grades` |
+| 文字列 | `reverse` `caesar` `roman` `title_case` `wordcount`(標準入力) `csv` |
+| データ型とリスト | `list` `option` `stdlib` `sort`(挿入ソートとクイックソート) `tree`(二分探索木) `pascal` `expr`(式評価器) `stack_machine` |
+| 効果とエラー処理 | `option_chain` `result_chain` `try_fail` `capture` `effects`(効果多相) `closures` `args`(引数と環境変数) `fs_roundtrip`(ファイル) |
+| 道具 | `cat` `rpn`(RPN 電卓) `tests` と `stdlib_tests`(`stackel test`) |
+| パッケージ | `pkg-demo` `pkg-effects`(依存に効果の上限を付ける) |
+
+新しい例を足すときは、`examples/NAME.stk` と、出力を確かめたうえで `examples/NAME.expected` を置く(`.expected` がない例があると、テストが失敗する)。必要なら次のファイルも置ける。
+
+- `NAME.stdin`: 標準入力に渡す内容
+- `NAME.args`: 引数(1行に1つ)
+- `NAME.cmd`: `run`(既定)、`check`、`test` のどれか
+
+パッケージの例は、ディレクトリ `examples/NAME/` と `examples/NAME.expected` の組になる。
+
+## 開発と CI
+
+```
+cargo fmt --check                        # 整形
+cargo clippy --all-targets -- -D warnings   # 静的解析
+cargo test                               # 単体・結合テストと examples
+STACKEL_CMD=target/debug/stackel scripts/check-examples.sh   # examples だけを、任意の実行コマンドで
+```
+
+GitHub Actions(`.github/workflows/ci.yml`)は、push と pull request で次を実行する。
+
+- **lint**: rustfmt、clippy(`-D warnings`)、shellcheck。結果が変わらないよう、Rust 1.75 で実行する
+- **test**: Linux(x86_64、aarch64)、macOS(Apple silicon、Intel)、Windows(x86_64、arm64)の実機で `cargo test`
+- **msrv**: Rust 1.75 で `cargo test`
+- **cross-test**: i686、aarch64、armv7、riscv64、powerpc64le、s390x(ビッグエンディアン)、loongarch64(実験的)を、`cross` と QEMU で実行
+- **cross-build**: FreeBSD、NetBSD、illumos、Windows(gnu)がビルドできること
+- **ci-ok**: ブランチ保護に指定するための、まとめのチェック
+
+QEMU の上ではテストバイナリが `stackel` を起動できないことがあるため、そのときは環境変数 `STACKEL_NO_SPAWN=1` で起動を伴うテストを飛ばし、examples は `scripts/check-examples.sh` が確かめる。
+
+## リリース
+
+1. `Cargo.toml` の `version` を上げ、`cargo build` で `Cargo.lock` を更新して、コミットする
+2. 試すには、GitHub の Actions で **Release** を手動で実行する(リハーサル)。全プラットフォームをビルドして、アーカイブを workflow の成果物に置くが、公開はしない
+3. タグを付けて push する
+
+   ```
+   git tag v0.2.0
+   git push origin v0.2.0
+   ```
+
+タグ(`vMAJOR.MINOR.PATCH`、プレリリースは `v0.2.0-rc.1`)が `Cargo.toml` のバージョンと違うと、ワークフローは最初に止まる。ビルドと検証がすべて通ると、GitHub のリリースに次が公開される。
+
+- 各プラットフォームのアーカイブ(それぞれ、自分の環境かQEMUの上で、全 examples を実行して検証済み)
+- `SHA256SUMS`
+- リリースノート: 前のタグからのコミットを、[Conventional Commits](https://www.conventionalcommits.org/) の種類(`feat`、`fix`、`perf` ...)ごとにまとめ、`!` か `BREAKING CHANGE` のものを先頭に出す。コミットメッセージが、そのままリリースノートになる
+
+ノートだけをローカルで見るには、`scripts/release-notes.sh v0.2.0`(HEAD でも可)。
 
 ## ロードマップ
 
