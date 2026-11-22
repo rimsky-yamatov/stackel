@@ -6,8 +6,11 @@
 
 use crate::types::{BASIC, NUM, ORD};
 
+/// Constraints on the type variables of a signature: (variable, set of allowed types).
+type Constraints = &'static [(&'static str, u8)];
+
 /// (word, signature, constraints on the type variables)
-pub const SIGNATURES: &[(&str, &str, &[(&str, u8)])] = &[
+pub const SIGNATURES: &[(&str, &str, Constraints)] = &[
     // stack words
     ("dup", "a -- a a", &[]),
     ("drop", "a --", &[]),
