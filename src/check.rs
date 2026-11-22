@@ -435,7 +435,7 @@ impl<'p> Checker<'p> {
         st.outs.truncate(m - have);
         if k > 0 {
             let mut new_ins: Vec<Ty> = ins[..k].to_vec();
-            new_ins.extend(st.ins.drain(..));
+            new_ins.append(&mut st.ins);
             st.ins = new_ins;
         }
         st.outs.extend(outs.iter().cloned());
@@ -703,10 +703,10 @@ impl<'p> Checker<'p> {
     fn pad(&mut self, st: &mut State, p: usize) {
         let fresh: Vec<Ty> = (0..p).map(|_| self.infer.fresh(ANY)).collect();
         let mut ins = fresh.clone();
-        ins.extend(st.ins.drain(..));
+        ins.append(&mut st.ins);
         st.ins = ins;
         let mut outs = fresh;
-        outs.extend(st.outs.drain(..));
+        outs.append(&mut st.outs);
         st.outs = outs;
     }
 }
