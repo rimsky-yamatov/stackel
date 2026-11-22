@@ -2,6 +2,12 @@
 
 use std::process::Command;
 
+/// Set `STACKEL_NO_SPAWN=1` where the test binary cannot start the `stackel` binary itself
+/// (cross-compiled runs under emulation); `scripts/check-examples.sh` covers those instead.
+fn spawning_disabled() -> bool {
+    std::env::var_os("STACKEL_NO_SPAWN").is_some()
+}
+
 fn stackel(args: &[&str]) -> std::process::Output {
     Command::new(env!("CARGO_BIN_EXE_stackel"))
         .args(args)
@@ -11,6 +17,9 @@ fn stackel(args: &[&str]) -> std::process::Output {
 
 #[test]
 fn version_flag_prints_the_package_version() {
+    if spawning_disabled() {
+        return;
+    }
     for flag in ["--version", "-V"] {
         let out = stackel(&[flag]);
         assert!(out.status.success());
@@ -23,6 +32,9 @@ fn version_flag_prints_the_package_version() {
 
 #[test]
 fn help_flag_prints_the_usage_and_succeeds() {
+    if spawning_disabled() {
+        return;
+    }
     for flag in ["--help", "-h"] {
         let out = stackel(&[flag]);
         assert!(out.status.success());
@@ -34,6 +46,9 @@ fn help_flag_prints_the_usage_and_succeeds() {
 
 #[test]
 fn an_unknown_command_is_a_usage_error() {
+    if spawning_disabled() {
+        return;
+    }
     let out = stackel(&["nonsense"]);
     assert_eq!(out.status.code(), Some(2));
     assert!(String::from_utf8(out.stderr)

@@ -1,0 +1,4 @@
+# Settings for `cross` (https://github.com/cross-rs/cross), used by the CI jobs that test
+# other architectures under QEMU.
+[build.env]
+passthrough = ["STACKEL_NO_SPAWN"]

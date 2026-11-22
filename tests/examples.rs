@@ -15,6 +15,12 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 
+/// Set `STACKEL_NO_SPAWN=1` where the test binary cannot start the `stackel` binary itself
+/// (cross-compiled runs under emulation); `scripts/check-examples.sh` covers those instead.
+fn spawning_disabled() -> bool {
+    std::env::var_os("STACKEL_NO_SPAWN").is_some()
+}
+
 fn root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
 }
@@ -97,6 +103,9 @@ fn every_example_has_a_golden_file() {
 
 #[test]
 fn every_example_prints_what_its_golden_file_says() {
+    if spawning_disabled() {
+        return;
+    }
     let mut failures = Vec::new();
     for (name, path) in examples() {
         let expected = match read_opt(&name, "expected") {
