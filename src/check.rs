@@ -663,10 +663,10 @@ impl<'p> Checker<'p> {
     ) -> Result<State> {
         // The branch that took fewer inputs leaves those values untouched: pad it.
         let (lt, le) = (t.ins.len(), e.ins.len());
-        if lt < le {
-            self.pad(&mut t, le - lt);
-        } else if le < lt {
-            self.pad(&mut e, lt - le);
+        match lt.cmp(&le) {
+            std::cmp::Ordering::Less => self.pad(&mut t, le - lt),
+            std::cmp::Ordering::Greater => self.pad(&mut e, lt - le),
+            std::cmp::Ordering::Equal => {}
         }
         if t.outs.len() != e.outs.len() {
             let msg = format!(
