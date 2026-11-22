@@ -14,7 +14,7 @@ if [ -z "${STACKEL_CMD:-}" ]; then
 fi
 read -r -a runner <<< "$STACKEL_CMD"
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit 2
 failed=0
 checked=0
 
