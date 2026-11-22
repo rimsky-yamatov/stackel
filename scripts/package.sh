@@ -62,8 +62,12 @@ archive="dist/$name.$format"
 if [ "$format" = "zip" ]; then
   if command -v zip >/dev/null 2>&1; then
     (cd dist && zip -qr "$name.zip" "$name")
-  else
+  elif command -v 7z >/dev/null 2>&1; then
     (cd dist && 7z a -tzip -bso0 -bsp0 "$name.zip" "$name")
+  else
+    # Windows runners always have PowerShell.
+    (cd dist && powershell -NoProfile -Command \
+      "Compress-Archive -Path '$name' -DestinationPath '$name.zip'")
   fi
 else
   tar -C dist -czf "$archive" "$name"
