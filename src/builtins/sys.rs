@@ -85,7 +85,7 @@ pub fn call(vm: &mut Interp, name: &str) -> Result<bool> {
         // String -- String Bool ! Env   (the value of the environment variable, and whether it is set)
         "env_var" => {
             let var = vm.pop_str()?;
-            match std::env::var(&var) {
+            match std::env::var(var) {
                 Ok(v) => {
                     vm.push(Value::Str(v));
                     vm.push(Value::Bool(true));
