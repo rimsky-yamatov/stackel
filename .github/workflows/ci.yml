@@ -36,6 +36,8 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy --locked --all-targets -- -D warnings
       - run: shellcheck scripts/*.sh
+      - name: Test the release notes script
+        run: scripts/test-release-notes.sh
 
   # The tests on every operating system and CPU architecture that has a GitHub-hosted runner.
   test:
