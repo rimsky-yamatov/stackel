@@ -23,13 +23,12 @@ fn root() -> PathBuf {
 fn examples() -> Vec<(String, String)> {
     let dir = root().join("examples");
     let mut found = Vec::new();
-    for entry in fs::read_dir(&dir).expect("examples/ exists") {
+    for entry in fs::read_dir(dir).expect("examples/ exists") {
         let path = entry.unwrap().path();
         let name = path.file_stem().unwrap().to_string_lossy().to_string();
         let rel = format!("examples/{}", path.file_name().unwrap().to_string_lossy());
-        if path.is_dir() && path.join("stackel.toml").exists() {
-            found.push((name, rel));
-        } else if path.extension().map_or(false, |e| e == "stk") {
+        let is_package = path.is_dir() && path.join("stackel.toml").exists();
+        if is_package || path.extension().is_some_and(|e| e == "stk") {
             found.push((name, rel));
         }
     }
