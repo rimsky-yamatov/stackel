@@ -298,10 +298,12 @@ impl<'f> Loader<'f> {
             let fail = |msg: String| Error::new(msg, spec.line.max(1), 1).in_file(mpath.clone());
             let rel = match &spec.path {
                 Some(p) => p.clone(),
-                None => return Err(fail(format!(
+                None => {
+                    return Err(fail(format!(
                     "dependency `{}` needs a `path` (registry dependencies are not supported yet)",
                     name
-                ))),
+                )))
+                }
             };
             if let Some(allow) = &spec.allow {
                 for e in allow {
